@@ -1,0 +1,27 @@
+{
+  "name": "pokitdok-nodejs",
+  "description": "PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com",
+  "tags": [
+    "x12",
+    "health",
+    "pokitdok",
+    "api"
+  ],
+  "version": "0.0.1",
+  "author": "Chris Wilhite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pokitdok/pokitdok-node.git"
+  },
+  "bugs": {
+    "url": "http://github.com/pokitdok/pokitdok-node/issues"
+  },
+  "license": "MIT",
+  "engines": [
+    "node >= 0.8.0"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "request": "^2.37.0"
+  }
+}
