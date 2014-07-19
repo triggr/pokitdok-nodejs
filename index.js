@@ -34,14 +34,14 @@ PokitDok.prototype.refreshAccessToken = function (options, callback) {
     var self = this;
     request({
         uri: baseUrl + '/oauth2/token',
+        method: 'POST',
         headers: {
             'Authorization': 'Basic ' + new Buffer(self.clientId + ':' + self.clientSecret).toString('base64'),
             'User Agent': userAgent
         },
         form: {
             grant_type: 'client_credentials'
-        },
-        method: 'POST'
+        }
     }, function (err, res, body) {
         self.refreshActive = false;
         if (res.statusCode != 200) {
@@ -82,6 +82,18 @@ PokitDok.prototype.apiRequest = function (options, callback) {
 };
 
 /**
+ * Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
+ * @param callback
+ */
+PokitDok.prototype.activities = function (options, callback) {
+    this.apiRequest({
+        path: '/activities/' + options.id,
+        method: 'GET',
+        qs: (!options.id) ? options : null
+    }, callback);
+};
+
+/**
  * get a list of trading partners from the API
  * @param callback
  */
@@ -93,18 +105,72 @@ PokitDok.prototype.tradingPartners = function (callback) {
 };
 
 /**
- * get a list of providers from the API
- * @param options
+ * get a list of payers from the API
  * @param callback
  */
-PokitDok.prototype.providers = function (options, callback) {
-    var path = '/providers/';
-    
+PokitDok.prototype.payers = function (callback) {
     this.apiRequest({
-        path: path,
+        path: '/payers/',
         method: 'GET'
-    });
+    }, callback);
 };
 
+/**
+ * Search health care providers in the PokitDok directory
+ * @param options
+ * @param callback
+ * @example refine a provider search
+ *  var pokitdok = new PokitDok(clientId, clientSecret);
+ *  //search for providers with all available filter options
+ *  pokitdok.providers({
+ *      zipcode: 30606,
+ *      radius: '10mi',
+ *      first_name: 'Cliff',
+ *      last_name: 'Wicklow',
+ *      specialty: 'RHEUMATOLOGY',
+ *      organization_name='Athens Regional Hospital',
+ *      limit: 20
+ *  }, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      console.log(res.meta.result_count + ' results');
+ *      for(i in res.data) {
+ *          console.log(i.first_name + ' ' + i.last_name);
+ *      }
+ *  });
+ *
+ * @example get a provider by npi id
+ *  var pokitdok = new PokitDok(clientId, clientSecret);
+ *  //search for provider using a npi id
+ *  pokitdok.providers({
+ *      npi: 1467560003
+ *  }, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      console.log(res.data.first_name + ' ' + res.data.last_name);
+ *  });
+ *
+ * @example get a provider by pokitdok id
+ *  var pokitdok = new PokitDok(clientId, clientSecret);
+ *  //search for provider using a pokitdok id
+ *  pokitdok.providers({
+ *      id: 1234567890ABCDEF
+ *  }, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      console.log(res.data.first_name + ' ' + res.data.last_name);
+ *  });
+ */
+PokitDok.prototype.providers = function (options, callback) {
+    this.apiRequest({
+        path: '/providers/' + options.id,
+        method: 'GET',
+        qs: (!options.id) ? options : null
+    }, callback);
+};
 
+// expose the constructor
 module.exports = PokitDok;

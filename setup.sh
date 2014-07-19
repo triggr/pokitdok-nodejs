@@ -4,4 +4,5 @@ nodeenv --node=0.10.29 --npm=1.4.20 --prebuilt venv
 rm -r venv/src
 . venv/bin/activate
 npm install -g mocha@1.20.1
+npm install -g jsdoc-to-markdown@0.5.5
 npm install
