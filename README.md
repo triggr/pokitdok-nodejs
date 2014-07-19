@@ -15,19 +15,17 @@ PokitDok Platform API Client for NodeJS
 ## Installation
 ```bash
 npm install pokitdok-nodejs
-    
 ```
 
 ## Quick Start
 ```javascript
-    
 ```
 
 This version of pokitdok-nodejs supports, and defaults to using, the new
 PokitDok v4 API. If you"d like to continue using the previous v3 API,
 instantiate the PokitDok object like this:
 
-```
+```javascript
 var pokitdok = new PokitDok('my_client_id', 'my_client_secret', true, 'v3')
 ```
 
