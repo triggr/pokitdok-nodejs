@@ -1,125 +1,43 @@
+pokitdok-nodejs
+=============
 
-<a name="PokitDok"></a>
-#class: PokitDok
-**Members**
+PokitDok Platform API Client for NodeJS
 
-* [class: PokitDok](#PokitDok)
-  * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
-  * [pokitDok.refreshAccessToken(options, callback)](#PokitDok#refreshAccessToken)
-  * [pokitDok.apiRequest(options, callback)](#PokitDok#apiRequest)
-  * [pokitDok.activities(callback)](#PokitDok#activities)
-  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
-  * [pokitDok.payers(callback)](#PokitDok#payers)
-  * [pokitDok.providers(options, callback)](#PokitDok#providers)
+## Resources
+* [Read the PokitDok API docs][apidocs]
+* [View Source on GitHub][code]
+* [Report Issues on GitHub][issues]
 
-<a name="new_PokitDok"></a>
-##new PokitDok(clientId, clientSecret, version)
-Create a connection to the pokitdok API
+[apidocs]: https://platform.pokitdok.com/documentation/v4#/
+[code]: https://github.com/PokitDok/pokitdok-nodejs
+[issues]: https://github.com/PokitDok/pokitdok-nodejs/issues
 
-**Params**
+## Installation
+```bash
+npm install pokitdok-nodejs
+```
 
-- clientId 
-- clientSecret 
-- version 
+## Quick Start
+```javascript
+```
 
-<a name="PokitDok#refreshAccessToken"></a>
-##pokitDok.refreshAccessToken(options, callback)
-Automatically refresh the access token when receiving a 401. Rejected
-requests are replayed after a token is refreshed.
+This version of pokitdok-nodejs supports, and defaults to using, the new
+PokitDok v4 API. If you"d like to continue using the previous v3 API,
+instantiate the PokitDok object like this:
 
-**Params**
+```javascript
+var pokitdok = new PokitDok('my_client_id', 'my_client_secret', 'v3')
+```
 
-- options 
-- callback 
+## Supported NodeJS versions
+This library aims to support and is tested against these NodeJS versions, 
+using travis-ci:
 
-<a name="PokitDok#apiRequest"></a>
-##pokitDok.apiRequest(options, callback)
-Make a request to the platform api. Handle 401's so that the access token is automatically created/refreshed.
+* 0.8.x
+* 0.9.x
+* 0.10.x
 
-**Params**
+## License
+Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
 
-- options 
-- callback 
-
-<a name="PokitDok#activities"></a>
-##pokitDok.activities(callback)
-Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
-
-**Params**
-
-- callback 
-
-<a name="PokitDok#tradingPartners"></a>
-##pokitDok.tradingPartners(callback)
-get a list of trading partners from the API
-
-**Params**
-
-- callback 
-
-<a name="PokitDok#payers"></a>
-##pokitDok.payers(callback)
-get a list of payers from the API
-
-**Params**
-
-- callback 
-
-<a name="PokitDok#providers"></a>
-##pokitDok.providers(options, callback)
-Search health care providers in the PokitDok directory
-
-**Params**
-
-- options 
-- callback 
-
-**Example**  
-refine a provider search
-var pokitdok = new PokitDok(clientId, clientSecret);
-//search for providers with all available filter options
-pokitdok.providers({
-    zipcode: 30606,
-    radius: '10mi',
-    first_name: 'Cliff',
-    last_name: 'Wicklow',
-    specialty: 'RHEUMATOLOGY',
-    organization_name='Athens Regional Hospital',
-    limit: 20
-}, function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    console.log(res.meta.result_count + ' results');
-    for(i in res.data) {
-        console.log(i.first_name + ' ' + i.last_name);
-    }
-});
-
-**Example**  
-get a provider by npi id
-var pokitdok = new PokitDok(clientId, clientSecret);
-//search for provider using a npi id
-pokitdok.providers({
-    npi: 1467560003
-}, function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    console.log(res.data.first_name + ' ' + res.data.last_name);
-});
-
-**Example**  
-get a provider by pokitdok id
-var pokitdok = new PokitDok(clientId, clientSecret);
-//search for provider using a pokitdok id
-pokitdok.providers({
-    id: 1234567890ABCDEF
-}, function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    console.log(res.data.first_name + ' ' + res.data.last_name);
-});
-
-
+[license]: LICENSE.txt
