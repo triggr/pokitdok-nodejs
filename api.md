@@ -1,3 +1,20 @@
+#Index
+
+
+**Classes**
+
+* [class: PokitDok](#PokitDok)
+  * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
+  * [pokitDok.apiRequest(options, callback)](#PokitDok#apiRequest)
+  * [pokitDok.activities(callback)](#PokitDok#activities)
+  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
+  * [pokitDok.payers(callback)](#PokitDok#payers)
+  * [pokitDok.providers(options, callback)](#PokitDok#providers)
+
+**Vars**
+
+* [userAgent](#userAgent)
+
 
 <a name="PokitDok"></a>
 #class: PokitDok
@@ -5,7 +22,6 @@
 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
-  * [pokitDok.refreshAccessToken(options, callback)](#PokitDok#refreshAccessToken)
   * [pokitDok.apiRequest(options, callback)](#PokitDok#apiRequest)
   * [pokitDok.activities(callback)](#PokitDok#activities)
   * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
@@ -14,23 +30,14 @@
 
 <a name="new_PokitDok"></a>
 ##new PokitDok(clientId, clientSecret, version)
-Create a connection to the pokitdok API
+Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
+or all requests made with your connection will return errors.
 
 **Params**
 
-- clientId 
-- clientSecret 
-- version 
-
-<a name="PokitDok#refreshAccessToken"></a>
-##pokitDok.refreshAccessToken(options, callback)
-Automatically refresh the access token when receiving a 401. Rejected
-requests are replayed after a token is refreshed.
-
-**Params**
-
-- options 
-- callback 
+- clientId `string` - The client id of your PokitDok App
+- clientSecret `string` - The client secret of your PokitDok App
+- version `string` - the version of the API the connection should use
 
 <a name="PokitDok#apiRequest"></a>
 ##pokitDok.apiRequest(options, callback)
@@ -67,11 +74,13 @@ get a list of payers from the API
 
 <a name="PokitDok#providers"></a>
 ##pokitDok.providers(options, callback)
-Search health care providers in the PokitDok directory
+Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
+provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
+404 error is returned. Use any of the other available options to return a list of providers.
 
 **Params**
 
-- options `object` - accepts id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+- options `object` - accepts: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
 - callback `function` - a function that accepts an error and response parameter
 
 **Example**  
@@ -128,4 +137,6 @@ pokitdok.providers({
 });
 ```
 
+<a name="userAgent"></a>
+#userAgent
 
