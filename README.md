@@ -5,6 +5,7 @@ PokitDok Platform API Client for NodeJS
 
 ## Resources
 * [Read the PokitDok API docs][apidocs]
+* [View the pokitdok-nodejs API Reference](#PokitDok)
 * [View Source on GitHub][code]
 * [Report Issues on GitHub][issues]
 
@@ -37,7 +38,6 @@ using travis-ci:
 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
-  * [pokitDok.apiRequest(options, callback)](#PokitDok#apiRequest)
   * [pokitDok.activities(callback)](#PokitDok#activities)
   * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
   * [pokitDok.payers(callback)](#PokitDok#payers)
@@ -53,15 +53,6 @@ or all requests made with your connection will return errors.
 - clientId `string` - The client id of your PokitDok App
 - clientSecret `string` - The client secret of your PokitDok App
 - version `string` - the version of the API the connection should use
-
-<a name="PokitDok#apiRequest"></a>
-##pokitDok.apiRequest(options, callback)
-Make a request to the platform api. Handle 401's so that the access token is automatically created/refreshed.
-
-**Params**
-
-- options 
-- callback 
 
 <a name="PokitDok#activities"></a>
 ##pokitDok.activities(callback)

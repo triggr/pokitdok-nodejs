@@ -7,8 +7,8 @@ var userAgent = 'pokitdok-nodejs@0.0.1',
     request = require('request'),
     _ = require('lodash');
 
-// a private function to automatically refresh the access token when receiving a 401. Adds rejected requests to a queue
-// to be processed
+// a private function to automatically refresh the access token when receiving a 401.
+// Adds rejected requests to a queue to be processed
 var refreshAccessToken = function (context, options, callback) {
     context.retryQueue.push([options, callback]);
     if (context.refeshActive) {
@@ -35,14 +35,35 @@ var refreshAccessToken = function (context, options, callback) {
         context.accessToken = token.access_token;
         while (0 < context.retryQueue.length) {
             var reqArgs = context.retryQueue.pop();
-            context.apiRequest(reqArgs[0], reqArgs[1]);
+            apiRequest(context, reqArgs[0], reqArgs[1]);
         }
+    });
+};
+
+// a private function to make a request to the platform api. Handles 401's so that the
+// access token is automatically created/refreshed.
+var apiRequest = function (context, options, callback) {
+    options.url = baseUrl + '/api/' + context.version + options.path;
+    options.headers = {
+        'Authorization': 'Bearer ' + context.accessToken,
+        'User Agent': userAgent
+    };
+    request(options, function (err, res, body) {
+        if (res.statusCode == 401) {
+            return refreshAccessToken(context, options, callback);
+        }
+        if (res.statusCode != 200) {
+            return callback && callback(res.body, res);
+        }
+        var data = JSON.parse(body);
+        callback && callback(null, data);
     });
 };
 
 /**
  * Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
  * or all requests made with your connection will return errors.
+ * @name PokitDok
  * @param {string} clientId - The client id of your PokitDok App
  * @param {string} clientSecret - The client secret of your PokitDok App
  * @param {string} version - the version of the API the connection should use
@@ -58,35 +79,11 @@ function PokitDok(clientId, clientSecret, version) {
 }
 
 /**
- * Make a request to the platform api. Handle 401's so that the access token is automatically created/refreshed.
- * @param options
- * @param callback
- */
-PokitDok.prototype.apiRequest = function (options, callback) {
-    var self = this;
-    options.url = baseUrl + '/api/' + this.version + options.path;
-    options.headers = {
-        'Authorization': 'Bearer ' + this.accessToken,
-        'User Agent': userAgent
-    };
-    request(options, function (err, res, body) {
-        if (res.statusCode == 401) {
-            return refreshAccessToken(self, options, callback);
-        }
-        if (res.statusCode != 200) {
-            return callback && callback(res.body, res);
-        }
-        var data = JSON.parse(body);
-        callback && callback(null, data);
-    });
-};
-
-/**
  * Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
  * @param callback
  */
 PokitDok.prototype.activities = function (options, callback) {
-    this.apiRequest({
+    apiRequest(this, {
         path: '/activities/' + options.id,
         method: 'GET',
         qs: (!options.id) ? options : null
@@ -98,7 +95,7 @@ PokitDok.prototype.activities = function (options, callback) {
  * @param callback
  */
 PokitDok.prototype.tradingPartners = function (callback) {
-    this.apiRequest({
+    apiRequest(this, {
         path: '/tradingpartners/',
         method: 'GET'
     }, callback);
@@ -109,7 +106,7 @@ PokitDok.prototype.tradingPartners = function (callback) {
  * @param callback
  */
 PokitDok.prototype.payers = function (callback) {
-    this.apiRequest({
+    apiRequest(this, {
         path: '/payers/',
         method: 'GET'
     }, callback);
@@ -173,7 +170,7 @@ PokitDok.prototype.payers = function (callback) {
  *  ```
  */
 PokitDok.prototype.providers = function (options, callback) {
-    this.apiRequest({
+    apiRequest(this, {
         path: '/providers/' + options.id,
         method: 'GET',
         qs: (!options.id) ? options : null
