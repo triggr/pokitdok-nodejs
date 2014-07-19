@@ -1,21 +1,11 @@
 var assert = require('assert'),
     async = require('async'),
     PokitDok = require('../index.js'),
-    clientId = process.env.POKITDOK_CLIENT_ID, //'m4mTXVIQ50P8pMIZQ6ge',
-    clientSecret = process.env.POKITDOK_CLIENT_SECRET; //'PGDVdl06zF4ZmODPBwZHqeIMLBm5YccVYROtNSNG';
+    clientId = process.env.POKITDOK_CLIENT_ID, 
+    clientSecret = process.env.POKITDOK_CLIENT_SECRET;
 
 describe('PokitDok', function () {
     var pokitdok = new PokitDok(clientId, clientSecret);
-//    describe('#refreshAccessToken()', function () {
-//        it('should return a token for a valid id/secret pair', function (done) {
-//            pokitdok.refreshAccessToken({}, function (err, res) {
-//                assert.equal(null, err);
-//                assert.equal(res.token_type, 'bearer');
-//                done();
-//            });
-//        });
-//    });
-
     describe('#tradingPartners()', function () {
         it('should return a list of trading partners', function (done) {
             pokitdok.tradingPartners(function (err, res) {
