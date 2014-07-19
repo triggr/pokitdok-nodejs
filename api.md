@@ -71,14 +71,14 @@ Search health care providers in the PokitDok directory
 
 **Params**
 
-- options 
-- callback 
+- options `object` - accepts id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+- callback `function` - a function that accepts an error and response parameter
 
 **Example**  
 refine a provider search
 ```javascript
+var PokitDok = require('pokitdok-nodejs');
 var pokitdok = new PokitDok(clientId, clientSecret);
-//search for providers with all available filter options
 pokitdok.providers({
     zipcode: 30606,
     radius: '10mi',
@@ -99,9 +99,10 @@ pokitdok.providers({
 ```
 
 **Example**  
-get a provider by npi id
+get a provider using a npi id
+```javascript
+var PokitDok = require('pokitdok-nodejs');
 var pokitdok = new PokitDok(clientId, clientSecret);
-//search for provider using a npi id
 pokitdok.providers({
     npi: 1467560003
 }, function(err, res){
@@ -110,11 +111,13 @@ pokitdok.providers({
     }
     console.log(res.data.first_name + ' ' + res.data.last_name);
 });
+```
 
 **Example**  
-get a provider by pokitdok id
+get a provider by using a pokitdok id
+```javascript
+var PokitDok = require('pokitdok-nodejs');
 var pokitdok = new PokitDok(clientId, clientSecret);
-//search for provider using a pokitdok id
 pokitdok.providers({
     id: 1234567890ABCDEF
 }, function(err, res){
@@ -123,5 +126,6 @@ pokitdok.providers({
     }
     console.log(res.data.first_name + ' ' + res.data.last_name);
 });
+```
 
 

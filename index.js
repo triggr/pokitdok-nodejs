@@ -117,12 +117,12 @@ PokitDok.prototype.payers = function (callback) {
 
 /**
  * Search health care providers in the PokitDok directory
- * @param options
- * @param callback
+ * @param {object} options - accepts id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+ * @param {function} callback - a function that accepts an error and response parameter
  * @example refine a provider search
  *  ```javascript
+ *  var PokitDok = require('pokitdok-nodejs');
  *  var pokitdok = new PokitDok(clientId, clientSecret);
- *  //search for providers with all available filter options
  *  pokitdok.providers({
  *      zipcode: 30606,
  *      radius: '10mi',
@@ -142,9 +142,10 @@ PokitDok.prototype.payers = function (callback) {
  *  });
  *  ```
  *
- * @example get a provider by npi id
+ * @example get a provider using a npi id
+ *  ```javascript
+ *  var PokitDok = require('pokitdok-nodejs');
  *  var pokitdok = new PokitDok(clientId, clientSecret);
- *  //search for provider using a npi id
  *  pokitdok.providers({
  *      npi: 1467560003
  *  }, function(err, res){
@@ -153,10 +154,12 @@ PokitDok.prototype.payers = function (callback) {
  *      }
  *      console.log(res.data.first_name + ' ' + res.data.last_name);
  *  });
+ *  ```
  *
- * @example get a provider by pokitdok id
+ * @example get a provider by using a pokitdok id
+ *  ```javascript
+ *  var PokitDok = require('pokitdok-nodejs');
  *  var pokitdok = new PokitDok(clientId, clientSecret);
- *  //search for provider using a pokitdok id
  *  pokitdok.providers({
  *      id: 1234567890ABCDEF
  *  }, function(err, res){
@@ -165,6 +168,7 @@ PokitDok.prototype.payers = function (callback) {
  *      }
  *      console.log(res.data.first_name + ' ' + res.data.last_name);
  *  });
+ *  ```
  */
 PokitDok.prototype.providers = function (options, callback) {
     this.apiRequest({
