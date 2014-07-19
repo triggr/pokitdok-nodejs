@@ -1,7 +1,3 @@
-[![Build Status](https://travis-ci.org/pokitdok/pokitdok-nodejs.svg?branch=master)](https://travis-ci.org/pokitdok/pokitdok-nodejs)
-[![Dependency Freshness](https://www.versioneye.com/user/projects/538e498b46c4739edd0000ee/badge.svg)](https://www.versioneye.com/user/projects/538e498b46c4739edd0000ee)
-
-
 pokitdok-nodejs
 =============
 
