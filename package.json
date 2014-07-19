@@ -24,5 +24,12 @@
     "dependencies": {
         "lodash": "^2.4.1",
         "request": "^2.37.0"
+    },
+    "devDependencies": {
+        "async": "^0.9.0",
+        "jsdoc-to-markdown": "^0.5.5"
+    },
+    "scripts": {
+        "docs": "jsdoc2md -t docs/README.hbs index.js > README.md"
     }
 }

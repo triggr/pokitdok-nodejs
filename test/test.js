@@ -1,7 +1,7 @@
 var assert = require('assert'),
     async = require('async'),
     PokitDok = require('../index.js'),
-    clientId = process.env.POKITDOK_CLIENT_ID, 
+    clientId = process.env.POKITDOK_CLIENT_ID,
     clientSecret = process.env.POKITDOK_CLIENT_SECRET;
 
 describe('PokitDok', function () {

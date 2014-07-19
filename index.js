@@ -1,29 +1,11 @@
-/**
- *
- */
+// JSDoc entries will be converted to markdown for documentation. Private functions or comments that should be private
+// should not use JSDoc syntax, or they will end up in the README.md file.
 
 // module globals and imports
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
     request = require('request'),
     _ = require('lodash');
-
-/**
- * Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
- * or all requests made with your connection will return errors.
- * @param {string} clientId - The client id of your PokitDok App
- * @param {string} clientSecret - The client secret of your PokitDok App
- * @param {string} version - the version of the API the connection should use
- * @constructor
- */
-function PokitDok(clientId, clientSecret, version) {
-    this.clientId = clientId;
-    this.clientSecret = clientSecret;
-    this.version = version || 'v4';
-    this.refeshActive = false;
-    this.retryQueue = [];
-    this.accessToken = null;
-}
 
 // a private function to automatically refresh the access token when receiving a 401. Adds rejected requests to a queue
 // to be processed
@@ -57,6 +39,23 @@ var refreshAccessToken = function (context, options, callback) {
         }
     });
 };
+
+/**
+ * Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
+ * or all requests made with your connection will return errors.
+ * @param {string} clientId - The client id of your PokitDok App
+ * @param {string} clientSecret - The client secret of your PokitDok App
+ * @param {string} version - the version of the API the connection should use
+ * @constructor
+ */
+function PokitDok(clientId, clientSecret, version) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.version = version || 'v4';
+    this.refeshActive = false;
+    this.retryQueue = [];
+    this.accessToken = null;
+}
 
 /**
  * Make a request to the platform api. Handle 401's so that the access token is automatically created/refreshed.
