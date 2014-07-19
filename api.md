@@ -76,6 +76,7 @@ Search health care providers in the PokitDok directory
 
 **Example**  
 refine a provider search
+```javascript
 var pokitdok = new PokitDok(clientId, clientSecret);
 //search for providers with all available filter options
 pokitdok.providers({
@@ -95,6 +96,7 @@ pokitdok.providers({
         console.log(i.first_name + ' ' + i.last_name);
     }
 });
+```
 
 **Example**  
 get a provider by npi id

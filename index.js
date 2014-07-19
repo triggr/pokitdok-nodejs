@@ -120,6 +120,7 @@ PokitDok.prototype.payers = function (callback) {
  * @param options
  * @param callback
  * @example refine a provider search
+ *  ```javascript
  *  var pokitdok = new PokitDok(clientId, clientSecret);
  *  //search for providers with all available filter options
  *  pokitdok.providers({
@@ -139,6 +140,7 @@ PokitDok.prototype.payers = function (callback) {
  *          console.log(i.first_name + ' ' + i.last_name);
  *      }
  *  });
+ *  ```
  *
  * @example get a provider by npi id
  *  var pokitdok = new PokitDok(clientId, clientSecret);
