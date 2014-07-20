@@ -90,25 +90,24 @@ provider or a 404 error response is returned.  When a npi is specified on the op
 - callback `function` - a function that accepts an error and response parameter
 
 **Example**  
-refine a provider search
 ```javascript
 var PokitDok = require('pokitdok-nodejs');
 var pokitdok = new PokitDok(clientId, clientSecret);
+// get a list of providers based on the filters provided
 pokitdok.providers({
     zipcode: 30606,
     radius: '10mi',
-    first_name: 'Cliff',
-    last_name: 'Wicklow',
     specialty: 'RHEUMATOLOGY',
-    organization_name='Athens Regional Hospital',
     limit: 20
 }, function(err, res){
     if(err) {
         return console.log(err, res.statusCode);
     }
     console.log(res.meta.result_count + ' results');
-    for(i in res.data) {
-        console.log(i.first_name + ' ' + i.last_name);
+    // res.data is a list of results
+    for(var i=0, ilen=res.data.length; i < ilen; i++) {
+        var provider = res.data[i];
+        console.log(provider.first_name + ' ' + provider.last_name);
     }
 });
 ```
@@ -124,6 +123,7 @@ pokitdok.providers({
     if(err) {
         return console.log(err, res.statusCode);
     }
+    // res.data is a single result
     console.log(res.data.first_name + ' ' + res.data.last_name);
 });
 ```
@@ -139,6 +139,7 @@ pokitdok.providers({
     if(err) {
         return console.log(err, res.statusCode);
     }
+    // res.data is a single result
     console.log(res.data.first_name + ' ' + res.data.last_name);
 });
 ```
