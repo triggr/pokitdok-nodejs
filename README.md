@@ -25,13 +25,12 @@ npm install pokitdok-nodejs
 ```
 
 ## Supported NodeJS versions
-This library aims to support and is tested against these NodeJS versions, 
-using travis-ci:
-
+This library aims to support and is tested against these NodeJS versions, using travis-ci:
 * 0.8.x
 * 0.9.x
 * 0.10.x
 
+## API Reference
 
 <a name="PokitDok"></a>
 ##class: PokitDok
@@ -54,6 +53,20 @@ or all requests made with your connection will return errors.
 - clientId `string` - The client id of your PokitDok App
 - clientSecret `string` - The client secret of your PokitDok App
 - version `string` - the version of the API the connection should use
+
+**Example**  
+```js
+// get a connection to the PokitDok Platform for the most recent version
+var PokitDok = require('pokitdok-nodejs');
+var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET);
+```
+
+**Example**  
+```js
+// get a connection to the PokitDok Platform for version 3
+var PokitDok = require('pokitdok-nodejs');
+var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET, 'v3');
+```
 
 <a name="PokitDok#activities"></a>
 ###pokitDok.activities(callback)
@@ -87,7 +100,7 @@ provider or a 404 error response is returned.  When a npi is specified on the op
 
 **Params**
 
-- options `object` - accepts: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+- options `object` - keys: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
 - callback `function` - a function that accepts an error and response parameter
 
 **Example**  
@@ -115,7 +128,7 @@ pokitdok.providers({
 ```js
 // get a provider using a npi id
 pokitdok.providers({
-    npi: 1467560003
+    npi: '1467560003'
 }, function(err, res){
     if(err) {
         return console.log(err, res.statusCode);
@@ -129,7 +142,7 @@ pokitdok.providers({
 ```js
 // get a provider using a pokitdok id
 pokitdok.providers({
-    id: 1234567890ABCDEF
+    id: '1234567890ABCDEF'
 }, function(err, res){
     if(err) {
         return console.log(err, res.statusCode);

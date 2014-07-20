@@ -80,6 +80,18 @@ var apiRequest = function (context, options, callback) {
  * @param {string} clientSecret - The client secret of your PokitDok App
  * @param {string} version - the version of the API the connection should use
  * @constructor
+ * @example
+ *  ```js
+ *  // get a connection to the PokitDok Platform for the most recent version
+ *  var PokitDok = require('pokitdok-nodejs');
+ *  var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET);
+ *  ```
+ * @example
+ *  ```js
+ *  // get a connection to the PokitDok Platform for version 3
+ *  var PokitDok = require('pokitdok-nodejs');
+ *  var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET, 'v3');
+ *  ```
  */
 function PokitDok(clientId, clientSecret, version) {
     this.clientId = clientId;
@@ -128,7 +140,7 @@ PokitDok.prototype.payers = function (callback) {
  * Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
  * provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
  * 404 error is returned. Use any of the other available options to return a list of providers.
- * @param {object} options - accepts: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+ * @param {object} options - keys: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
  * @param {function} callback - a function that accepts an error and response parameter
  * @example
  *  ```js
@@ -155,7 +167,7 @@ PokitDok.prototype.payers = function (callback) {
  *  ```js
  *  // get a provider using a npi id
  *  pokitdok.providers({
- *      npi: 1467560003
+ *      npi: '1467560003'
  *  }, function(err, res){
  *      if(err) {
  *          return console.log(err, res.statusCode);
@@ -169,7 +181,7 @@ PokitDok.prototype.payers = function (callback) {
  *  ```js
  *  // get a provider using a pokitdok id
  *  pokitdok.providers({
- *      id: 1234567890ABCDEF
+ *      id: '1234567890ABCDEF'
  *  }, function(err, res){
  *      if(err) {
  *          return console.log(err, res.statusCode);
@@ -180,10 +192,11 @@ PokitDok.prototype.payers = function (callback) {
  *  ```
  */
 PokitDok.prototype.providers = function (options, callback) {
+    var token = options.id || options.npi || '';
     apiRequest(this, {
-        path: '/providers/' + options.id,
+        path: '/providers/' + token,
         method: 'GET',
-        qs: (!options.id) ? options : null
+        qs: (!options.id && !options.npi) ? options : null
     }, callback);
 };
 
