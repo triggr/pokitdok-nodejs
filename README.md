@@ -32,19 +32,29 @@ using travis-ci:
 
 #API Reference
 
-<a name="PokitDok"></a>
-#class: PokitDok
+<a name="module_index"></a>
+#index
+PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com
+
+**Example**  
+```js
+var PokitDok = require('pokitdok-nodejs');
+pokitdok = PokitDok(process.env.POKITDOK_API_ID, process.env.POKITDOK_API_SECRET);
+```
+
+<a name="module_index..PokitDok"></a>
+##class: pokitdok-nodejs~PokitDok
 **Members**
 
-* [class: PokitDok](#PokitDok)
-  * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
-  * [pokitDok.activities(callback)](#PokitDok#activities)
-  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
-  * [pokitDok.payers(callback)](#PokitDok#payers)
-  * [pokitDok.providers(options, callback)](#PokitDok#providers)
+* [class: pokitdok-nodejs~PokitDok](#module_index..PokitDok)
+  * [new pokitdok-nodejs~PokitDok(clientId, clientSecret, version)](#new_module_index..PokitDok)
+  * [pokitDok.activities(callback)](#module_index..PokitDok#activities)
+  * [pokitDok.tradingPartners(callback)](#module_index..PokitDok#tradingPartners)
+  * [pokitDok.payers(callback)](#module_index..PokitDok#payers)
+  * [pokitDok.providers(options, callback)](#module_index..PokitDok#providers)
 
-<a name="new_PokitDok"></a>
-##new PokitDok(clientId, clientSecret, version)
+<a name="new_module_index..PokitDok"></a>
+###new pokitdok-nodejs~PokitDok(clientId, clientSecret, version)
 Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
 or all requests made with your connection will return errors.
 
@@ -54,32 +64,33 @@ or all requests made with your connection will return errors.
 - clientSecret `string` - The client secret of your PokitDok App
 - version `string` - the version of the API the connection should use
 
-<a name="PokitDok#activities"></a>
-##pokitDok.activities(callback)
+**Scope**: inner class of [index](#module_index)  
+<a name="module_index..PokitDok#activities"></a>
+###pokitDok.activities(callback)
 Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
 
 **Params**
 
 - callback 
 
-<a name="PokitDok#tradingPartners"></a>
-##pokitDok.tradingPartners(callback)
+<a name="module_index..PokitDok#tradingPartners"></a>
+###pokitDok.tradingPartners(callback)
 get a list of trading partners from the API
 
 **Params**
 
 - callback 
 
-<a name="PokitDok#payers"></a>
-##pokitDok.payers(callback)
+<a name="module_index..PokitDok#payers"></a>
+###pokitDok.payers(callback)
 get a list of payers from the API
 
 **Params**
 
 - callback 
 
-<a name="PokitDok#providers"></a>
-##pokitDok.providers(options, callback)
+<a name="module_index..PokitDok#providers"></a>
+###pokitDok.providers(options, callback)
 Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
 provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
 404 error is returned. Use any of the other available options to return a list of providers.
@@ -90,9 +101,7 @@ provider or a 404 error response is returned.  When a npi is specified on the op
 - callback `function` - a function that accepts an error and response parameter
 
 **Example**  
-```javascript
-var PokitDok = require('pokitdok-nodejs');
-var pokitdok = new PokitDok(clientId, clientSecret);
+```js
 // get a list of providers based on the filters provided
 pokitdok.providers({
     zipcode: 30606,
@@ -113,10 +122,8 @@ pokitdok.providers({
 ```
 
 **Example**  
-get a provider using a npi id
-```javascript
-var PokitDok = require('pokitdok-nodejs');
-var pokitdok = new PokitDok(clientId, clientSecret);
+```js
+// get a provider using a npi id
 pokitdok.providers({
     npi: 1467560003
 }, function(err, res){
@@ -129,10 +136,8 @@ pokitdok.providers({
 ```
 
 **Example**  
-get a provider by using a pokitdok id
-```javascript
-var PokitDok = require('pokitdok-nodejs');
-var pokitdok = new PokitDok(clientId, clientSecret);
+```js
+// get a provider using a pokitdok id
 pokitdok.providers({
     id: 1234567890ABCDEF
 }, function(err, res){

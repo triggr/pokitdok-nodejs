@@ -1,3 +1,14 @@
+/**
+ * PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com
+ * @module
+ * @alias pokitdok-nodejs
+ * @example
+ *  ```js
+ *  var PokitDok = require('pokitdok-nodejs');
+ *  pokitdok = PokitDok(process.env.POKITDOK_API_ID, process.env.POKITDOK_API_SECRET);
+ *  ```
+ */
+
 // JSDoc entries will be converted to markdown for documentation. Private functions or comments that should be private
 // should not use JSDoc syntax, or they will end up in the README.md file.
 
@@ -131,9 +142,7 @@ PokitDok.prototype.payers = function (callback) {
  * @param {object} options - accepts: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
  * @param {function} callback - a function that accepts an error and response parameter
  * @example
- *  ```javascript
- *  var PokitDok = require('pokitdok-nodejs');
- *  var pokitdok = new PokitDok(clientId, clientSecret);
+ *  ```js
  *  // get a list of providers based on the filters provided
  *  pokitdok.providers({
  *      zipcode: 30606,
@@ -153,10 +162,9 @@ PokitDok.prototype.payers = function (callback) {
  *  });
  *  ```
  *
- * @example get a provider using a npi id
- *  ```javascript
- *  var PokitDok = require('pokitdok-nodejs');
- *  var pokitdok = new PokitDok(clientId, clientSecret);
+ * @example
+ *  ```js
+ *  // get a provider using a npi id
  *  pokitdok.providers({
  *      npi: 1467560003
  *  }, function(err, res){
@@ -168,10 +176,9 @@ PokitDok.prototype.payers = function (callback) {
  *  });
  *  ```
  *
- * @example get a provider by using a pokitdok id
- *  ```javascript
- *  var PokitDok = require('pokitdok-nodejs');
- *  var pokitdok = new PokitDok(clientId, clientSecret);
+ * @example
+ *  ```js
+ *  // get a provider using a pokitdok id
  *  pokitdok.providers({
  *      id: 1234567890ABCDEF
  *  }, function(err, res){
