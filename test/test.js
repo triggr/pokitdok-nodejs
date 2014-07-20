@@ -16,6 +16,17 @@ describe('PokitDok', function () {
             });
         });
     });
+
+    describe('#payers()', function () {
+        it('should return a list of payers', function (done) {
+            pokitdok.tradingPartners(function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Array, true);
+                done();
+            });
+        });
+    });
 });
 
 describe('AsyncPokitDok', function () {
