@@ -3,6 +3,8 @@ pokitdok-nodejs
 
 PokitDok Platform API Client for NodeJS
 
+![alt tag](https://pbs.twimg.com/profile_images/1557833527/alwaysbetonjs.png)
+
 ## Resources
 * [Read the PokitDok API docs][apidocs]
 * [View the pokitdok-nodejs API Reference](#PokitDok)
