@@ -39,9 +39,9 @@ This library aims to support and is tested against these NodeJS versions, using 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
   * [pokitDok.activities(callback)](#PokitDok#activities)
-  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
+  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
 
 <a name="new_PokitDok"></a>
 ###new PokitDok(clientId, clientSecret, version)
@@ -58,27 +58,19 @@ or all requests made with your connection will return errors.
 ```js
 // get a connection to the PokitDok Platform for the most recent version
 var PokitDok = require('pokitdok-nodejs');
-var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET);
+var pokitdok = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET);
 ```
 
 **Example**  
 ```js
 // get a connection to the PokitDok Platform for version 3
 var PokitDok = require('pokitdok-nodejs');
-var pokitdok = PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET, 'v3');
+var pokitdokV3 = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET, 'v3');
 ```
 
 <a name="PokitDok#activities"></a>
 ###pokitDok.activities(callback)
-Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
-
-**Params**
-
-- callback 
-
-<a name="PokitDok#tradingPartners"></a>
-###pokitDok.tradingPartners(callback)
-get a list of trading partners from the API
+Get a list of activities from the API. If an id is passed with the options, get a single activity.
 
 **Params**
 
@@ -86,11 +78,40 @@ get a list of trading partners from the API
 
 <a name="PokitDok#payers"></a>
 ###pokitDok.payers(callback)
-get a list of payers from the API
+Get a list of payers from the API for use in other EDI transactions.
 
 **Params**
 
-- callback 
+- callback `function`
+
+**Example**  
+```js
+// cache a list of payers for use in other EDI transactions
+var payerList = [];
+pokitdok.payers(function(err, res){
+    if(err) {
+        return console.log(err, res.statusCode);
+    }
+    // save the list for later use
+    payerList = res.data;
+    console.log(payerList);
+});
+```
+
+**Example**  
+```js
+// print the trading partner id's, used to identify a payer for other EDI transaction
+pokitdok.payers(function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the name and trading_partner_id of each payer
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var payer = res.data[i];
+        console.log(payer.payer_name + ':' + payer.trading_partner_id);
+    }
+});
+```
 
 <a name="PokitDok#providers"></a>
 ###pokitDok.providers(options, callback)
@@ -149,6 +170,43 @@ pokitdok.providers({
     }
     // res.data is a single result
     console.log(res.data.first_name + ' ' + res.data.last_name);
+});
+```
+
+<a name="PokitDok#tradingPartners"></a>
+###pokitDok.tradingPartners(callback)
+Get a list of trading partners from the API for use in other EDI transactions.
+
+**Params**
+
+- callback `function`
+
+**Example**  
+```js
+// cache a list of trading partners for use in other EDI transactions
+var tradingPartnerList = [];
+pokitdok.tradingPartners(function(err, res){
+    if(err) {
+        return console.log(err, res.statusCode);
+    }
+    // save the list for later use
+    tradingPartnerList = res.data;
+    console.log(tradingPartnerList);
+});
+```
+
+**Example**  
+```js
+// print the trading partner id's, used to identify a payer for other EDI transaction
+pokitdok.tradingPartners(function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the name and trading_partner_id of each trading partner
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var tradingPartner = res.data[i];
+        console.log(tradingPartner.name + ':' + tradingPartner.id);
+    }
 });
 ```
 
