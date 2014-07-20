@@ -10,10 +10,13 @@ var userAgent = 'pokitdok-nodejs@0.0.1',
 // a private function to automatically refresh the access token when receiving a 401.
 // Adds rejected requests to a queue to be processed
 var refreshAccessToken = function (context, options, callback) {
+    // add the current request to the queue
     context.retryQueue.push([options, callback]);
+    // bail if the token is currently being refreshed
     if (context.refeshActive) {
         return false;
     }
+    // ready to refresh
     context.refeshActive = true;
     request({
         uri: baseUrl + '/oauth2/token',
@@ -27,12 +30,16 @@ var refreshAccessToken = function (context, options, callback) {
         }
     }, function (err, res, body) {
         context.refreshActive = false;
+        // if anything but a 200 is returned from the token refresh call, we return the error to the
+        // caller and blow out the retry queue
         if (res.statusCode != 200) {
             context.retryQueue = [];
             return callback && callback(res.body, res);
         }
+        // set the access token on the connection
         var token = JSON.parse(body);
         context.accessToken = token.access_token;
+        // process the queue of requests for the current connection
         while (0 < context.retryQueue.length) {
             var reqArgs = context.retryQueue.pop();
             apiRequest(context, reqArgs[0], reqArgs[1]);
@@ -43,18 +50,23 @@ var refreshAccessToken = function (context, options, callback) {
 // a private function to make a request to the platform api. Handles 401's so that the
 // access token is automatically created/refreshed.
 var apiRequest = function (context, options, callback) {
+    // build the default url for the requests
     options.url = baseUrl + '/api/' + context.version + options.path;
+    // apply the auth magic
     options.headers = {
         'Authorization': 'Bearer ' + context.accessToken,
         'User Agent': userAgent
     };
     request(options, function (err, res, body) {
+        // if a 401 is returned, hit the refresh token process
         if (res.statusCode == 401) {
             return refreshAccessToken(context, options, callback);
         }
+        // all other error codes get sent to the caller
         if (res.statusCode != 200) {
             return callback && callback(res.body, res);
         }
+        // only return javascript objects to callers on 200's
         var data = JSON.parse(body);
         callback && callback(null, data);
     });
@@ -118,25 +130,25 @@ PokitDok.prototype.payers = function (callback) {
  * 404 error is returned. Use any of the other available options to return a list of providers.
  * @param {object} options - accepts: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
  * @param {function} callback - a function that accepts an error and response parameter
- * @example refine a provider search
+ * @example
  *  ```javascript
  *  var PokitDok = require('pokitdok-nodejs');
  *  var pokitdok = new PokitDok(clientId, clientSecret);
+ *  // get a list of providers based on the filters provided
  *  pokitdok.providers({
  *      zipcode: 30606,
  *      radius: '10mi',
- *      first_name: 'Cliff',
- *      last_name: 'Wicklow',
  *      specialty: 'RHEUMATOLOGY',
- *      organization_name='Athens Regional Hospital',
  *      limit: 20
  *  }, function(err, res){
  *      if(err) {
  *          return console.log(err, res.statusCode);
  *      }
  *      console.log(res.meta.result_count + ' results');
- *      for(i in res.data) {
- *          console.log(i.first_name + ' ' + i.last_name);
+ *      // res.data is a list of results
+ *      for(var i=0, ilen=res.data.length; i < ilen; i++) {
+ *          var provider = res.data[i];
+ *          console.log(provider.first_name + ' ' + provider.last_name);
  *      }
  *  });
  *  ```
@@ -151,6 +163,7 @@ PokitDok.prototype.payers = function (callback) {
  *      if(err) {
  *          return console.log(err, res.statusCode);
  *      }
+ *      // res.data is a single result
  *      console.log(res.data.first_name + ' ' + res.data.last_name);
  *  });
  *  ```
@@ -165,6 +178,7 @@ PokitDok.prototype.payers = function (callback) {
  *      if(err) {
  *          return console.log(err, res.statusCode);
  *      }
+ *      // res.data is a single result
  *      console.log(res.data.first_name + ' ' + res.data.last_name);
  *  });
  *  ```
