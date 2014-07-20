@@ -1,14 +1,3 @@
-/**
- * PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com
- * @module
- * @alias pokitdok-nodejs
- * @example
- *  ```js
- *  var PokitDok = require('pokitdok-nodejs');
- *  pokitdok = PokitDok(process.env.POKITDOK_API_ID, process.env.POKITDOK_API_SECRET);
- *  ```
- */
-
 // JSDoc entries will be converted to markdown for documentation. Private functions or comments that should be private
 // should not use JSDoc syntax, or they will end up in the README.md file.
 

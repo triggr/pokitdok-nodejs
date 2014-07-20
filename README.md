@@ -30,31 +30,20 @@ using travis-ci:
 * 0.9.x
 * 0.10.x
 
-#API Reference
 
-<a name="module_index"></a>
-#index
-PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com
-
-**Example**  
-```js
-var PokitDok = require('pokitdok-nodejs');
-pokitdok = PokitDok(process.env.POKITDOK_API_ID, process.env.POKITDOK_API_SECRET);
-```
-
-<a name="module_index..PokitDok"></a>
-##class: pokitdok-nodejs~PokitDok
+<a name="PokitDok"></a>
+##class: PokitDok
 **Members**
 
-* [class: pokitdok-nodejs~PokitDok](#module_index..PokitDok)
-  * [new pokitdok-nodejs~PokitDok(clientId, clientSecret, version)](#new_module_index..PokitDok)
-  * [pokitDok.activities(callback)](#module_index..PokitDok#activities)
-  * [pokitDok.tradingPartners(callback)](#module_index..PokitDok#tradingPartners)
-  * [pokitDok.payers(callback)](#module_index..PokitDok#payers)
-  * [pokitDok.providers(options, callback)](#module_index..PokitDok#providers)
+* [class: PokitDok](#PokitDok)
+  * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
+  * [pokitDok.activities(callback)](#PokitDok#activities)
+  * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
+  * [pokitDok.payers(callback)](#PokitDok#payers)
+  * [pokitDok.providers(options, callback)](#PokitDok#providers)
 
-<a name="new_module_index..PokitDok"></a>
-###new pokitdok-nodejs~PokitDok(clientId, clientSecret, version)
+<a name="new_PokitDok"></a>
+###new PokitDok(clientId, clientSecret, version)
 Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
 or all requests made with your connection will return errors.
 
@@ -64,8 +53,7 @@ or all requests made with your connection will return errors.
 - clientSecret `string` - The client secret of your PokitDok App
 - version `string` - the version of the API the connection should use
 
-**Scope**: inner class of [index](#module_index)  
-<a name="module_index..PokitDok#activities"></a>
+<a name="PokitDok#activities"></a>
 ###pokitDok.activities(callback)
 Get a list of activities partners from the API. If an id is passed with the options, get a single activity.
 
@@ -73,7 +61,7 @@ Get a list of activities partners from the API. If an id is passed with the opti
 
 - callback 
 
-<a name="module_index..PokitDok#tradingPartners"></a>
+<a name="PokitDok#tradingPartners"></a>
 ###pokitDok.tradingPartners(callback)
 get a list of trading partners from the API
 
@@ -81,7 +69,7 @@ get a list of trading partners from the API
 
 - callback 
 
-<a name="module_index..PokitDok#payers"></a>
+<a name="PokitDok#payers"></a>
 ###pokitDok.payers(callback)
 get a list of payers from the API
 
@@ -89,7 +77,7 @@ get a list of payers from the API
 
 - callback 
 
-<a name="module_index..PokitDok#providers"></a>
+<a name="PokitDok#providers"></a>
 ###pokitDok.providers(options, callback)
 Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
 provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
