@@ -38,7 +38,7 @@ This library aims to support and is tested against these NodeJS versions, using 
 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
-  * [pokitDok.activities(callback)](#PokitDok#activities)
+  * [pokitDok.activities(options, callback)](#PokitDok#activities)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
   * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
@@ -69,12 +69,29 @@ var pokitdokV3 = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITD
 ```
 
 <a name="PokitDok#activities"></a>
-###pokitDok.activities(callback)
-Get a list of activities from the API. If an id is passed with the options, get a single activity.
+###pokitDok.activities(options, callback)
+Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
+change the state of an activity by passing the
 
 **Params**
 
-- callback 
+- options `object` - keys: id
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// get a list of activities
+pokitdok.activities({}, function(err, res){
+    if(err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the activity name status and id
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var activity = res.data[i];
+        console.log(activity.id + ':' + activity.name + ':' + activity.state.name);
+    }
+});
+```
 
 <a name="PokitDok#payers"></a>
 ###pokitDok.payers(callback)
@@ -82,7 +99,7 @@ Get a list of payers from the API for use in other EDI transactions.
 
 **Params**
 
-- callback `function`
+- callback `function` - a callback function that accepts an error and response parameter
 
 **Example**  
 ```js
@@ -121,25 +138,24 @@ provider or a 404 error response is returned.  When a npi is specified on the op
 
 **Params**
 
-- options `object` - keys: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
-- callback `function` - a function that accepts an error and response parameter
+- options `object` - keys: npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+- callback `function` - a callback function that accepts an error and response parameter
 
 **Example**  
 ```js
 // get a list of providers based on the filters provided
 pokitdok.providers({
-    zipcode: 30606,
+    zipcode: 94118,
+    last_name: 'shen',
     radius: '10mi',
-    specialty: 'RHEUMATOLOGY',
-    limit: 20
+    limit: 2
 }, function(err, res){
     if(err) {
         return console.log(err, res.statusCode);
     }
-    console.log(res.meta.result_count + ' results');
     // res.data is a list of results
     for(var i=0, ilen=res.data.length; i < ilen; i++) {
-        var provider = res.data[i];
+        var provider = res.data[i].provider;
         console.log(provider.first_name + ' ' + provider.last_name);
     }
 });
@@ -149,27 +165,13 @@ pokitdok.providers({
 ```js
 // get a provider using a npi id
 pokitdok.providers({
-    npi: '1467560003'
+    npi: '1881692002'
 }, function(err, res){
     if(err) {
         return console.log(err, res.statusCode);
     }
     // res.data is a single result
-    console.log(res.data.first_name + ' ' + res.data.last_name);
-});
-```
-
-**Example**  
-```js
-// get a provider using a pokitdok id
-pokitdok.providers({
-    id: '1234567890ABCDEF'
-}, function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    // res.data is a single result
-    console.log(res.data.first_name + ' ' + res.data.last_name);
+    console.log(res.data.provider.first_name + ' ' + res.data.provider.last_name);
 });
 ```
 
@@ -179,7 +181,7 @@ Get a list of trading partners from the API for use in other EDI transactions.
 
 **Params**
 
-- callback `function`
+- callback `function` - a callback function that accepts an error and response parameter
 
 **Example**  
 ```js

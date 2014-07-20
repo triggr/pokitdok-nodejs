@@ -51,3 +51,44 @@ pokitdok.tradingPartners(function (err, res) {
         console.log(tradingPartner.name + ':' + tradingPartner.id);
     }
 });
+
+// get a list of providers based on the filters provided
+pokitdok.providers({
+    zipcode: 94118,
+    last_name: 'shen',
+    radius: '10mi',
+    limit: 2
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // res.data is a list of results
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var provider = res.data[i].provider;
+        console.log(provider.first_name + ' ' + provider.last_name);
+    }
+});
+
+// get a provider using a npi id
+pokitdok.providers({
+    npi: '1881692002'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // res.data is a single result
+    console.log(res.data.provider.first_name + ' ' + res.data.provider.last_name);
+});
+
+
+// get a list of activities
+pokitdok.activities({}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the activity name status and id
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var activity = res.data[i];
+        console.log(activity.id + ':' + activity.name + ':' + activity.state.name);
+    }
+});

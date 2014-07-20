@@ -103,12 +103,29 @@ function PokitDok(clientId, clientSecret, version) {
 }
 
 /**
- * Get a list of activities from the API. If an id is passed with the options, get a single activity.
- * @param callback
+ * Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
+ * change the state of an activity by passing the
+ * @param {object} options - keys: id
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // get a list of activities
+ *  pokitdok.activities({}, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the activity name status and id
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var activity = res.data[i];
+ *          console.log(activity.id + ':' + activity.name + ':' + activity.state.name);
+ *      }
+ *  });
+ *  ```
  */
 PokitDok.prototype.activities = function (options, callback) {
+    var token = options.id || '';
     apiRequest(this, {
-        path: '/activities/' + options.id,
+        path: '/activities/' + token,
         method: 'GET',
         qs: (!options.id) ? options : null
     }, callback);
@@ -138,7 +155,7 @@ PokitDok.prototype.insurancePrices = function (options, callback) {
 
 /**
  * Get a list of payers from the API for use in other EDI transactions.
- * @param {function} callback
+ * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
  *  // cache a list of payers for use in other EDI transactions
@@ -178,24 +195,23 @@ PokitDok.prototype.payers = function (callback) {
  * Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
  * provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
  * 404 error is returned. Use any of the other available options to return a list of providers.
- * @param {object} options - keys: id, npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
- * @param {function} callback - a function that accepts an error and response parameter
+ * @param {object} options - keys: npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
+ * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
  *  // get a list of providers based on the filters provided
  *  pokitdok.providers({
- *      zipcode: 30606,
+ *      zipcode: 94118,
+ *      last_name: 'shen',
  *      radius: '10mi',
- *      specialty: 'RHEUMATOLOGY',
- *      limit: 20
+ *      limit: 2
  *  }, function(err, res){
  *      if(err) {
  *          return console.log(err, res.statusCode);
  *      }
- *      console.log(res.meta.result_count + ' results');
  *      // res.data is a list of results
  *      for(var i=0, ilen=res.data.length; i < ilen; i++) {
- *          var provider = res.data[i];
+ *          var provider = res.data[i].provider;
  *          console.log(provider.first_name + ' ' + provider.last_name);
  *      }
  *  });
@@ -204,41 +220,28 @@ PokitDok.prototype.payers = function (callback) {
  *  ```js
  *  // get a provider using a npi id
  *  pokitdok.providers({
- *      npi: '1467560003'
+ *      npi: '1881692002'
  *  }, function(err, res){
  *      if(err) {
  *          return console.log(err, res.statusCode);
  *      }
  *      // res.data is a single result
- *      console.log(res.data.first_name + ' ' + res.data.last_name);
- *  });
- *  ```
- * @example
- *  ```js
- *  // get a provider using a pokitdok id
- *  pokitdok.providers({
- *      id: '1234567890ABCDEF'
- *  }, function(err, res){
- *      if(err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // res.data is a single result
- *      console.log(res.data.first_name + ' ' + res.data.last_name);
+ *      console.log(res.data.provider.first_name + ' ' + res.data.provider.last_name);
  *  });
  *  ```
  */
 PokitDok.prototype.providers = function (options, callback) {
-    var token = options.id || options.npi || '';
+    var token = options.npi || '';
     apiRequest(this, {
         path: '/providers/' + token,
         method: 'GET',
-        qs: (!options.id && !options.npi) ? options : null
+        qs: (!options.npi) ? options : null
     }, callback);
 };
 
 /**
  * Get a list of trading partners from the API for use in other EDI transactions.
- * @param {function} callback
+ * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
  *  // cache a list of trading partners for use in other EDI transactions
