@@ -41,6 +41,9 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.activities(options, callback)](#PokitDok#activities)
   * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
   * [pokitDok.claims(options, callback)](#PokitDok#claims)
+  * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
+  * [pokitDok.eligibility(options, callback)](#PokitDok#eligibility)
+  * [pokitDok.files(fileReadStream, callback)](#PokitDok#files)
   * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
@@ -218,6 +221,115 @@ pokitdok.claims({
 });
 ```
 
+<a name="PokitDok#claimStatus"></a>
+###pokitDok.claimStatus(options, callback)
+Get the status of a submitted claim from the specified trading partner. You can specify a specific tracking id if
+you have one from the original claim.
+
+**Params**
+
+- options `object` - the claim status query
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// get the status of a claim using a date range and tracking id
+pokitdok.claimStatus({
+    patient: {
+        birth_date: '1970-01-01',
+        first_name: 'JANE',
+        last_name: 'DOE',
+        id: '1234567890'
+    },
+    provider: {
+        first_name: 'Jerome',
+        last_name: 'Aya-Ay',
+        npi: '1467560003',
+    },
+    service_date: '2014-01-01',
+    service_end_date: '2014-01-04',
+    trading_partner_id: 'MOCKPAYER',
+    tracking_id: 'ABC12345'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the tracking_id and status of the claim
+    console.log(res.data.tracking_id + ':' + res.data.status);
+});
+```
+
+<a name="PokitDok#eligibility"></a>
+###pokitDok.eligibility(options, callback)
+Get an eligibility response from a trading partner based on the provided eligibility document (provider, member,
+cpt code, service_types)
+
+**Params**
+
+- options `object` - keys: provider, service_types, member, cpt_code, trading_partner_id
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// get general eligibility for a member for a specific provider
+pokitdok.eligibility({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    service_types: ['health_benefit_plan_coverage'],
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member eligibility for the specified provider
+    console.log(res.data);
+});
+```
+
+**Example**  
+```js
+// get eligibility for a member for a specific CPT code
+pokitdok.eligibility({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    cpt_code: '81291',
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member eligibility for the specified CPT code
+    console.log(res.data);
+});
+```
+
+<a name="PokitDok#files"></a>
+###pokitDok.files(fileReadStream, callback)
+Submit a raw X12 file to the pokitdok platform for processing
+
+**Params**
+
+- fileReadStream `FileReadStream`
+- callback `function`
+
 <a name="PokitDok#insurancePrices"></a>
 ###pokitDok.insurancePrices(options, callback)
 Get a list of insurance prices for a particular CPT Code in a specific Zip Code
@@ -337,9 +449,6 @@ pokitdok.tradingPartners(function (err, res) {
     }
 });
 ```
-
-
-
 
 ## License
 Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.

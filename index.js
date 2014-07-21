@@ -18,7 +18,7 @@ var refreshAccessToken = function (context, options, callback) {
     }
     // ready to refresh
     context.refeshActive = true;
-    request({
+    return request({
         uri: baseUrl + '/oauth2/token',
         method: 'POST',
         headers: {
@@ -57,7 +57,7 @@ var apiRequest = function (context, options, callback) {
         'Authorization': 'Bearer ' + context.accessToken,
         'User Agent': userAgent
     };
-    request(options, function (err, res, body) {
+    return request(options, function (err, res, body) {
         // if a 401 is returned, hit the refresh token process
         if (res.statusCode == 401) {
             return refreshAccessToken(context, options, callback);
@@ -271,16 +271,126 @@ PokitDok.prototype.claims = function (options, callback) {
     }, callback);
 };
 
+/**
+ * Get the status of a submitted claim from the specified trading partner. You can specify a specific tracking id if
+ * you have one from the original claim.
+ * @param {object} options - the claim status query
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // get the status of a claim using a date range and tracking id
+ *  pokitdok.claimStatus({
+ *      patient: {
+ *          birth_date: '1970-01-01',
+ *          first_name: 'JANE',
+ *          last_name: 'DOE',
+ *          id: '1234567890'
+ *      },
+ *      provider: {
+ *          first_name: 'Jerome',
+ *          last_name: 'Aya-Ay',
+ *          npi: '1467560003',
+ *      },
+ *      service_date: '2014-01-01',
+ *      service_end_date: '2014-01-04',
+ *      trading_partner_id: 'MOCKPAYER',
+ *      tracking_id: 'ABC12345'
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the tracking_id and status of the claim
+ *      console.log(res.data.tracking_id + ':' + res.data.status);
+ *  });
+ *  ```
+ */
 PokitDok.prototype.claimStatus = function (options, callback) {
+    apiRequest(this, {
+        path: '/claims/status/',
+        method: 'POST',
+        json: options
+    }, callback);
 };
 
-PokitDok.prototype.eligiblity = function (options, callback) {
+/**
+ * Get an eligibility response from a trading partner based on the provided eligibility document (provider, member,
+ * cpt code, service_types)
+ * @param {object} options - keys: provider, service_types, member, cpt_code, trading_partner_id
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // get general eligibility for a member for a specific provider
+ *  pokitdok.eligibility({
+ *      member: {
+ *          birth_date: '1970-01-01',
+ *          first_name: 'Jane',
+ *          last_name: 'Doe',
+ *          id: 'W000000000'
+ *      },
+ *      provider: {
+ *          first_name: 'JEROME',
+ *          last_name: 'AYA-AY',
+ *          npi: '1467560003'
+ *      },
+ *      service_types: ['health_benefit_plan_coverage'],
+ *      trading_partner_id: 'MOCKPAYER'
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the member eligibility for the specified provider
+ *      console.log(res.data);
+ *  });
+ *  ```
+ * @example
+ *  ```js
+ *  // get eligibility for a member for a specific CPT code
+ *  pokitdok.eligibility({
+ *      member: {
+ *          birth_date: '1970-01-01',
+ *          first_name: 'Jane',
+ *          last_name: 'Doe',
+ *          id: 'W000000000'
+ *      },
+ *      provider: {
+ *          first_name: 'JEROME',
+ *          last_name: 'AYA-AY',
+ *          npi: '1467560003'
+ *      },
+ *      cpt_code: '81291',
+ *      trading_partner_id: 'MOCKPAYER'
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the member eligibility for the specified CPT code
+ *      console.log(res.data);
+ *  });
+ *  ```
+ */
+PokitDok.prototype.eligibility = function (options, callback) {
+    apiRequest(this, {
+        path: '/eligibility/',
+        method: 'POST',
+        json: options
+    }, callback);
 };
 
 PokitDok.prototype.enrollment = function (options, callback) {
 };
 
-PokitDok.prototype.files = function (options, callback) {
+/**
+ * Submit a raw X12 file to the pokitdok platform for processing
+ * @param {FileReadStream} fileReadStream
+ * @param {Function} callback
+ */
+PokitDok.prototype.files = function (fileReadStream, callback) {
+    // basic file validation
+    // encode file for delivery over http
+    fileReadStream.pipe(apiRequest(this, {
+        path: '/files/',
+        method: 'POST'
+    }, callback));
 };
 
 /**

@@ -110,6 +110,77 @@ pokitdok.claims({
     console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
 });
 
+// get the status of a claim using a date range and tracking id
+pokitdok.claimStatus({
+    patient: {
+        birth_date: '1970-01-01',
+        first_name: 'JANE',
+        last_name: 'DOE',
+        id: '1234567890'
+    },
+    provider: {
+        first_name: 'Jerome',
+        last_name: 'Aya-Ay',
+        npi: '1467560003',
+    },
+    service_date: '2014-01-01',
+    service_end_date: '2014-01-04',
+    trading_partner_id: 'MOCKPAYER',
+    tracking_id: 'ABC12345'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the tracking_id and status of the claim
+    console.log(res.data.tracking_id + ':' + res.data.status);
+});
+
+// get general eligibility for a member for a specific provider
+pokitdok.eligibility({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    service_types: ['health_benefit_plan_coverage'],
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member eligibility
+    console.log(res.data);
+});
+
+// get general eligibility for a member for a specific provider using a CPT code
+pokitdok.eligibility({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    cpt_code: '81291',
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member eligibility for the specified CPT code
+    console.log(res.data);
+});
+
 // print the procedure code and price for a particular zip/cpt combination
 pokitdok.insurancePrices({
     zip_code: '94401',

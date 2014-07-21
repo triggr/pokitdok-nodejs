@@ -120,6 +120,33 @@ describe('PokitDok', function () {
         });
     });
 
+    describe('#claimStatus()', function () {
+        it('should return a status response', function (done) {
+            pokitdok.claimStatus({
+                patient: {
+                    birth_date: '1970-01-01',
+                    first_name: 'JANE',
+                    last_name: 'DOE',
+                    id: '1234567890'
+                },
+                provider: {
+                    first_name: 'Jerome',
+                    last_name: 'Aya-Ay',
+                    npi: '1467560003',
+                },
+                service_date: '2014-01-01',
+                service_end_date: '2014-01-04',
+                trading_partner_id: 'MOCKPAYER',
+                tracking_id: 'ABC12345'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
     describe('#insurancePrices()', function () {
         it('should return a single price', function (done) {
             pokitdok.insurancePrices({
