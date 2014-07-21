@@ -194,14 +194,14 @@ PokitDok.prototype.activities = function (options, callback) {
  *      // print the cpt, geo_zip and average price
  *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
  *          var price = res.data[i];
- *          console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average);
+ *          console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average_price);
  *      }
  *  });
  *  ```
  */
 PokitDok.prototype.cashPrices = function (options, callback) {
     apiRequest(this, {
-        path: '/prices/cash/',
+        path: '/prices/cash',
         method: 'GET',
         qs: options
     }, callback);
@@ -304,14 +304,14 @@ PokitDok.prototype.claims = function (options, callback) {
  *      if (err) {
  *          return console.log(err, res.statusCode);
  *      }
- *      // print the tracking_id and status of the claim
- *      console.log(res.data.tracking_id + ':' + res.data.status);
+ *      // print the correlation_id and trading_partner_id of the claim
+ *      console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
  *  });
  *  ```
  */
 PokitDok.prototype.claimStatus = function (options, callback) {
     apiRequest(this, {
-        path: '/claims/status/',
+        path: '/claims/status',
         method: 'POST',
         json: options
     }, callback);
@@ -424,7 +424,7 @@ PokitDok.prototype.files = function (fileReadStream, callback) {
  */
 PokitDok.prototype.insurancePrices = function (options, callback) {
     apiRequest(this, {
-        path: '/prices/insurance/',
+        path: '/prices/insurance',
         method: 'GET',
         qs: options
     }, callback);

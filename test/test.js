@@ -57,7 +57,7 @@ describe('PokitDok', function () {
                 assert.equal(res.data instanceof Array, true);
                 assert.equal(res.data[0].cpt_code == '90658', true);
                 assert.equal(res.data[0].geo_zip_area == '944', true);
-                assert.equal(res.data[0].average == 45.58, true);
+                assert.equal(res.data[0].average_price == 45.58, true);
                 done();
             });
         });

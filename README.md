@@ -31,7 +31,6 @@ This library aims to support and is tested against these NodeJS versions, using 
 * 0.10.x
 
 ## API Reference
-
 <a name="PokitDok"></a>
 ##class: PokitDok
 **Members**
@@ -150,7 +149,7 @@ pokitdok.cashPrices({
     // print the cpt, geo_zip and average price
     for (var i = 0, ilen = res.data.length; i < ilen; i++) {
         var price = res.data[i];
-        console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average);
+        console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average_price);
     }
 });
 ```
@@ -254,8 +253,8 @@ pokitdok.claimStatus({
     if (err) {
         return console.log(err, res.statusCode);
     }
-    // print the tracking_id and status of the claim
-    console.log(res.data.tracking_id + ':' + res.data.status);
+    // print the correlation_id and trading_partner_id of the claim
+    console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
 });
 ```
 
@@ -449,7 +448,6 @@ pokitdok.tradingPartners(function (err, res) {
     }
 });
 ```
-
 
 
 
