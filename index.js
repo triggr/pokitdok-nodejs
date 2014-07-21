@@ -67,7 +67,12 @@ var apiRequest = function (context, options, callback) {
             return callback && callback(res.body, res);
         }
         // only return javascript objects to callers on 200's
-        var data = JSON.parse(body);
+        var data = {};
+        try {
+            data = JSON.parse(body);
+        } catch (err) {
+            data = body;
+        }
         callback && callback(null, data);
     });
 };
@@ -155,7 +160,7 @@ function PokitDok(clientId, clientSecret, version) {
  *  ```
  */
 PokitDok.prototype.activities = function (options, callback) {
-    if (typeof options == Function) {
+    if (options instanceof Function) {
         callback = options;
     }
     if (!options) {

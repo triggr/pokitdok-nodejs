@@ -450,6 +450,9 @@ pokitdok.tradingPartners(function (err, res) {
 });
 ```
 
+
+
+
 ## License
 Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
 

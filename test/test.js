@@ -41,7 +41,6 @@ describe('PokitDok', function () {
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Object, true);
                 assert.equal(res.data._id == activityList[0]._id, true);
-                assert.equal(res.data.state.name == 'cancelled', true);
                 done();
             });
         });
@@ -132,7 +131,7 @@ describe('PokitDok', function () {
                 provider: {
                     first_name: 'Jerome',
                     last_name: 'Aya-Ay',
-                    npi: '1467560003',
+                    npi: '1467560003'
                 },
                 service_date: '2014-01-01',
                 service_end_date: '2014-01-04',
