@@ -39,6 +39,9 @@ This library aims to support and is tested against these NodeJS versions, using 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
   * [pokitDok.activities(options, callback)](#PokitDok#activities)
+  * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
+  * [pokitDok.claims(options, callback)](#PokitDok#claims)
+  * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
   * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
@@ -71,11 +74,11 @@ var pokitdokV3 = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITD
 <a name="PokitDok#activities"></a>
 ###pokitDok.activities(options, callback)
 Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
-change the state of an activity by passing the
+change the state of an activity by passing the desired state (pause, cancel, resume) in the transition key.
 
 **Params**
 
-- options `object` - keys: id
+- options `object` - keys: id, transition
 - callback `function` - a callback function that accepts an error and response parameter
 
 **Example**  
@@ -93,6 +96,157 @@ pokitdok.activities({}, function(err, res){
 });
 ```
 
+**Example**  
+```js
+// get a single activity
+pokitdok.activities({
+    id: '5317f51527a27620f2ec7533'
+}, function(err, res){
+    if(err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the activity name status and id
+    console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+});
+```
+
+**Example**  
+```js
+// cancel an  activity
+pokitdok.activities({
+    id: '5317f51527a27620f2ec7533',
+    transition: 'cancel'
+}, function(err, res){
+    if(err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the activity name status and id
+    console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+});
+```
+
+<a name="PokitDok#cashPrices"></a>
+###pokitDok.cashPrices(options, callback)
+Get a list of cash prices for a particular CPT Code in a specific Zip Code
+
+**Params**
+
+- options `object` - keys: cpt_code, zip_code
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// print the procedure code and price for a particular zip/cpt combination
+pokitdok.cashPrices({
+        zip_code: '94401',
+        cpt_code: '90658'
+    }, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the cpt, geo_zip and average price
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var price = res.data[i];
+        console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average);
+    }
+});
+```
+
+<a name="PokitDok#claims"></a>
+###pokitDok.claims(options, callback)
+Submit a claim for processing. The API calls back with an activity object that tracks the state of the claim.
+
+**Params**
+
+- options `object` - the claim document
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// submit a claim document
+pokitdok.claims({
+    transaction_code: 'chargeable',
+    trading_partner_id: 'MOCKPAYER',
+    billing_provider: {
+        taxonomy_code: '207Q00000X',
+        first_name: 'Jerome',
+        last_name: 'Aya-Ay',
+        npi: '1467560003',
+        address: {
+            address_lines: [
+                '8311 WARREN H ABERNATHY HWY'
+            ],
+            city: 'SPARTANBURG',
+            state: 'SC',
+            zipcode: '29301'
+        },
+        tax_id: '123456789'
+    },
+    subscriber: {
+        first_name: 'Jane',
+        last_name: 'Doe',
+        member_id: 'W000000000',
+        address: {
+            address_lines: ['123 N MAIN ST'],
+            city: 'SPARTANBURG',
+            state: 'SC',
+            zipcode: '29301'
+        },
+        birth_date: '1970-01-01',
+        gender: 'female'
+    },
+    claim: {
+        total_charge_amount: 60.0,
+        service_lines: [
+            {
+                procedure_code: '99213',
+                charge_amount: 60.0,
+                unit_count: 1.0,
+                diagnosis_codes: [
+                    '487.1'
+                ],
+                service_date: '2014-06-01'
+            }
+        ]
+    }
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the activity id, name and state
+    console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+});
+```
+
+<a name="PokitDok#insurancePrices"></a>
+###pokitDok.insurancePrices(options, callback)
+Get a list of insurance prices for a particular CPT Code in a specific Zip Code
+
+**Params**
+
+- options `object` - keys: cpt_code, zip_code
+- callback `function` - a callback function that accepts an error and response parameter
+
+**Example**  
+```js
+// print the procedure code and price for a particular zip/cpt combination
+pokitdok.insurancePrices({
+        zip_code: '94401',
+        cpt_code: '90658'
+    }, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the cpt and geo_zip
+    console.log(res.data.cpt_code + ':' + res.data.geo_zip_area);
+    // print the average price per payment types
+    for (var i = 0, ilen = res.data.amounts.length; i < ilen; i++) {
+        var price = res.data.amounts[i];
+        console.log(price.payment_type + ':' + price.average);
+    }
+});
+```
+
 <a name="PokitDok#payers"></a>
 ###pokitDok.payers(callback)
 Get a list of payers from the API for use in other EDI transactions.
@@ -100,20 +254,6 @@ Get a list of payers from the API for use in other EDI transactions.
 **Params**
 
 - callback `function` - a callback function that accepts an error and response parameter
-
-**Example**  
-```js
-// cache a list of payers for use in other EDI transactions
-var payerList = [];
-pokitdok.payers(function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    // save the list for later use
-    payerList = res.data;
-    console.log(payerList);
-});
-```
 
 **Example**  
 ```js
@@ -182,20 +322,6 @@ Get a list of trading partners from the API for use in other EDI transactions.
 **Params**
 
 - callback `function` - a callback function that accepts an error and response parameter
-
-**Example**  
-```js
-// cache a list of trading partners for use in other EDI transactions
-var tradingPartnerList = [];
-pokitdok.tradingPartners(function(err, res){
-    if(err) {
-        return console.log(err, res.statusCode);
-    }
-    // save the list for later use
-    tradingPartnerList = res.data;
-    console.log(tradingPartnerList);
-});
-```
 
 **Example**  
 ```js

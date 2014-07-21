@@ -72,6 +72,11 @@ var apiRequest = function (context, options, callback) {
     });
 };
 
+// clean up parameters
+var formatParameters = function (options, callback) {
+
+};
+
 /**
  * Create a connection to the pokitdok API. The version defaults to v4. You must enter your client ID and client secret
  * or all requests made with your connection will return errors.
@@ -104,8 +109,8 @@ function PokitDok(clientId, clientSecret, version) {
 
 /**
  * Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
- * change the state of an activity by passing the
- * @param {object} options - keys: id
+ * change the state of an activity by passing the desired state (pause, cancel, resume) in the transition key.
+ * @param {object} options - keys: id, transition
  * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
@@ -121,21 +126,149 @@ function PokitDok(clientId, clientSecret, version) {
  *      }
  *  });
  *  ```
+ * @example
+ *  ```js
+ *  // get a single activity
+ *  pokitdok.activities({
+ *      id: '5317f51527a27620f2ec7533'
+ *  }, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the activity name status and id
+ *      console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+ *  });
+ *  ```
+ * @example
+ *  ```js
+ *  // cancel an  activity
+ *  pokitdok.activities({
+ *      id: '5317f51527a27620f2ec7533',
+ *      transition: 'cancel'
+ *  }, function(err, res){
+ *      if(err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the activity name status and id
+ *      console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+ *  });
+ *  ```
  */
 PokitDok.prototype.activities = function (options, callback) {
+    if (typeof options == Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
     var token = options.id || '';
     apiRequest(this, {
         path: '/activities/' + token,
-        method: 'GET',
-        qs: (!options.id) ? options : null
+        method: (options.transition && options.id) ? 'PUT' : 'GET',
+        qs: (!options.id) ? options : null,
+        json: {
+            transition: options.transition
+        }
     }, callback);
 };
 
+/**
+ * Get a list of cash prices for a particular CPT Code in a specific Zip Code
+ * @param {object} options - keys: cpt_code, zip_code
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // print the procedure code and price for a particular zip/cpt combination
+ *  pokitdok.cashPrices({
+ *          zip_code: '94401',
+ *          cpt_code: '90658'
+ *      }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the cpt, geo_zip and average price
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var price = res.data[i];
+ *          console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average);
+ *      }
+ *  });
+ *  ```
+ */
 PokitDok.prototype.cashPrices = function (options, callback) {
+    apiRequest(this, {
+        path: '/prices/cash/',
+        method: 'GET',
+        qs: options
+    }, callback);
 };
 
-
+/**
+ * Submit a claim for processing. The API calls back with an activity object that tracks the state of the claim.
+ * @param {object} options - the claim document
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // submit a claim document
+ *  pokitdok.claims({
+ *      transaction_code: 'chargeable',
+ *      trading_partner_id: 'MOCKPAYER',
+ *      billing_provider: {
+ *          taxonomy_code: '207Q00000X',
+ *          first_name: 'Jerome',
+ *          last_name: 'Aya-Ay',
+ *          npi: '1467560003',
+ *          address: {
+ *              address_lines: [
+ *                  '8311 WARREN H ABERNATHY HWY'
+ *              ],
+ *              city: 'SPARTANBURG',
+ *              state: 'SC',
+ *              zipcode: '29301'
+ *          },
+ *          tax_id: '123456789'
+ *      },
+ *      subscriber: {
+ *          first_name: 'Jane',
+ *          last_name: 'Doe',
+ *          member_id: 'W000000000',
+ *          address: {
+ *              address_lines: ['123 N MAIN ST'],
+ *              city: 'SPARTANBURG',
+ *              state: 'SC',
+ *              zipcode: '29301'
+ *          },
+ *          birth_date: '1970-01-01',
+ *          gender: 'female'
+ *      },
+ *      claim: {
+ *          total_charge_amount: 60.0,
+ *          service_lines: [
+ *              {
+ *                  procedure_code: '99213',
+ *                  charge_amount: 60.0,
+ *                  unit_count: 1.0,
+ *                  diagnosis_codes: [
+ *                      '487.1'
+ *                  ],
+ *                  service_date: '2014-06-01'
+ *              }
+ *          ]
+ *      }
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the activity id, name and state
+ *      console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+ *  });
+ *  ```
+ */
 PokitDok.prototype.claims = function (options, callback) {
+    apiRequest(this, {
+        path: '/claims/',
+        method: 'POST',
+        json: options
+    }, callback);
 };
 
 PokitDok.prototype.claimStatus = function (options, callback) {
@@ -150,25 +283,41 @@ PokitDok.prototype.enrollment = function (options, callback) {
 PokitDok.prototype.files = function (options, callback) {
 };
 
+/**
+ * Get a list of insurance prices for a particular CPT Code in a specific Zip Code
+ * @param {object} options - keys: cpt_code, zip_code
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // print the procedure code and price for a particular zip/cpt combination
+ *  pokitdok.insurancePrices({
+ *          zip_code: '94401',
+ *          cpt_code: '90658'
+ *      }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the cpt and geo_zip
+ *      console.log(res.data.cpt_code + ':' + res.data.geo_zip_area);
+ *      // print the average price per payment types
+ *      for (var i = 0, ilen = res.data.amounts.length; i < ilen; i++) {
+ *          var price = res.data.amounts[i];
+ *          console.log(price.payment_type + ':' + price.average);
+ *      }
+ *  });
+ *  ```
+ */
 PokitDok.prototype.insurancePrices = function (options, callback) {
+    apiRequest(this, {
+        path: '/prices/insurance/',
+        method: 'GET',
+        qs: options
+    }, callback);
 };
 
 /**
  * Get a list of payers from the API for use in other EDI transactions.
  * @param {function} callback - a callback function that accepts an error and response parameter
- * @example
- *  ```js
- *  // cache a list of payers for use in other EDI transactions
- *  var payerList = [];
- *  pokitdok.payers(function(err, res){
- *      if(err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // save the list for later use
- *      payerList = res.data;
- *      console.log(payerList);
- *  });
- *  ```
  * @example
  *  ```js
  *  // print the trading partner id's, used to identify a payer for other EDI transaction
@@ -242,19 +391,6 @@ PokitDok.prototype.providers = function (options, callback) {
 /**
  * Get a list of trading partners from the API for use in other EDI transactions.
  * @param {function} callback - a callback function that accepts an error and response parameter
- * @example
- *  ```js
- *  // cache a list of trading partners for use in other EDI transactions
- *  var tradingPartnerList = [];
- *  pokitdok.tradingPartners(function(err, res){
- *      if(err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // save the list for later use
- *      tradingPartnerList = res.data;
- *      console.log(tradingPartnerList);
- *  });
- *  ```
  * @example
  *  ```js
  *  // print the trading partner id's, used to identify a payer for other EDI transaction
