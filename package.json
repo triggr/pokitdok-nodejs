@@ -1,32 +1,40 @@
 {
-    "name": "pokitdok-nodejs",
-    "description": "PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com",
-    "tags": [
-        "health", "api", "pokitdok", "X12", "eligibility", "claims", "providers", "prices", "healthcare"
-    ],
-    "version": "0.0.3",
-    "author": "Chris Wilhite",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/pokitdok/pokitdok-nodejs.git"
-    },
-    "bugs": {
-        "url": "http://github.com/pokitdok/pokitdok-nodejs/issues"
-    },
-    "license": "MIT",
-    "engines": [
-        "node >= 0.8.0"
-    ],
-    "main": "index.js",
-    "dependencies": {
-        "lodash": "^2.4.1",
-        "request": "^2.37.0"
-    },
-    "devDependencies": {
-        "async": "^0.9.0",
-        "jsdoc-to-markdown": "^0.5.5"
-    },
-    "scripts": {
-        "docs": "jsdoc2md -t docs/README.hbs index.js > README.md"
-    }
+  "name": "pokitdok-nodejs",
+  "description": "PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com",
+  "tags": [
+    "health",
+    "api",
+    "pokitdok",
+    "X12",
+    "eligibility",
+    "claims",
+    "providers",
+    "prices",
+    "healthcare"
+  ],
+  "version": "0.0.4",
+  "author": "Chris Wilhite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pokitdok/pokitdok-nodejs.git"
+  },
+  "bugs": {
+    "url": "http://github.com/pokitdok/pokitdok-nodejs/issues"
+  },
+  "license": "MIT",
+  "engines": [
+    "node >= 0.8.0"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "request": "^2.37.0"
+  },
+  "devDependencies": {
+    "async": "^0.9.0",
+    "jsdoc-to-markdown": "^0.5.5"
+  },
+  "scripts": {
+    "docs": "jsdoc2md -t docs/README.hbs index.js > README.md"
+  }
 }
