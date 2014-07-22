@@ -2,19 +2,16 @@
     "name": "pokitdok-nodejs",
     "description": "PokitDok Platform API Client for NodeJS. https://platform.pokitdok.com",
     "tags": [
-        "x12",
-        "health",
-        "pokitdok",
-        "api"
+        "health", "api", "pokitdok", "X12", "eligibility", "claims", "providers", "prices", "healthcare"
     ],
-    "version": "0.0.2",
+    "version": "0.0.3",
     "author": "Chris Wilhite",
     "repository": {
         "type": "git",
-        "url": "https://github.com/pokitdok/pokitdok-node.git"
+        "url": "https://github.com/pokitdok/pokitdok-nodejs.git"
     },
     "bugs": {
-        "url": "http://github.com/pokitdok/pokitdok-node/issues"
+        "url": "http://github.com/pokitdok/pokitdok-nodejs/issues"
     },
     "license": "MIT",
     "engines": [
