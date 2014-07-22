@@ -213,6 +213,54 @@ describe('PokitDok', function () {
             });
         });
     });
+
+    describe('#eligibility()', function () {
+        it('general eligibility for a member for a specific provider should return a status response', function (done) {
+            pokitdok.eligibility({
+                member: {
+                    birth_date: '1970-01-01',
+                    first_name: 'Jane',
+                    last_name: 'Doe',
+                    id: 'W000000000'
+                },
+                provider: {
+                    first_name: 'JEROME',
+                    last_name: 'AYA-AY',
+                    npi: '1467560003'
+                },
+                cpt_code: '81291',
+                trading_partner_id: 'MOCKPAYER'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+
+        it('get general eligibility for a member for a specific provider using a CPT code should return a status response', function (done) {
+            pokitdok.eligibility({
+                member: {
+                    birth_date: '1970-01-01',
+                    first_name: 'Jane',
+                    last_name: 'Doe',
+                    id: 'W000000000'
+                },
+                provider: {
+                    first_name: 'JEROME',
+                    last_name: 'AYA-AY',
+                    npi: '1467560003'
+                },
+                cpt_code: '81291',
+                trading_partner_id: 'MOCKPAYER'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
 });
 
 describe('AsyncPokitDok', function () {

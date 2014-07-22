@@ -13,11 +13,11 @@ var refreshAccessToken = function (context, options, callback) {
     // add the current request to the queue
     context.retryQueue.push([options, callback]);
     // bail if the token is currently being refreshed
-    if (context.refeshActive) {
+    if (context.refreshActive) {
         return false;
     }
     // ready to refresh
-    context.refeshActive = true;
+    context.refreshActive = true;
     return request({
         uri: baseUrl + '/oauth2/token',
         method: 'POST',
@@ -59,7 +59,7 @@ var apiRequest = function (context, options, callback) {
     };
     return request(options, function (err, res, body) {
         // if a 401 is returned, hit the refresh token process
-        if (res.statusCode == 401) {
+        if (res.statusCode == 401 || res.statusCode == 400) {
             return refreshAccessToken(context, options, callback);
         }
         // all other error codes get sent to the caller
@@ -107,7 +107,7 @@ function PokitDok(clientId, clientSecret, version) {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.version = version || 'v4';
-    this.refeshActive = false;
+    this.refreshActive = false;
     this.retryQueue = [];
     this.accessToken = null;
 }
