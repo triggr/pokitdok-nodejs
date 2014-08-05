@@ -27,7 +27,6 @@ This library aims to support and is tested against these NodeJS versions, using 
 * 0.10.x
 
 ## API Reference
-
 <a name="PokitDok"></a>
 ##class: PokitDok
 **Members**
@@ -52,9 +51,9 @@ or all requests made with your connection will return errors.
 
 **Params**
 
-- clientId `string` - The client id of your PokitDok App
-- clientSecret `string` - The client secret of your PokitDok App
-- version `string` - the version of the API the connection should use
+- clientId `string` - The client id of your PokitDok App  
+- clientSecret `string` - The client secret of your PokitDok App  
+- version `string` - the version of the API the connection should use  
 
 **Example**  
 ```js
@@ -77,8 +76,8 @@ change the state of an activity by passing the desired state (pause, cancel, res
 
 **Params**
 
-- options `object` - keys: id, transition
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - keys: id, transition  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -130,8 +129,8 @@ Get a list of cash prices for a particular CPT Code in a specific Zip Code
 
 **Params**
 
-- options `object` - keys: cpt_code, zip_code
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - keys: cpt_code, zip_code  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -157,8 +156,8 @@ Submit a claim for processing. The API calls back with an activity object that t
 
 **Params**
 
-- options `object` - the claim document
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - the claim document  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -224,8 +223,8 @@ you have one from the original claim.
 
 **Params**
 
-- options `object` - the claim status query
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - the claim status query  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -262,8 +261,8 @@ cpt code, service_types)
 
 **Params**
 
-- options `object` - keys: provider, service_types, member, cpt_code, trading_partner_id
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - keys: provider, service_types, member, cpt_code, trading_partner_id  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -323,8 +322,8 @@ Submit a raw X12 file to the pokitdok platform for processing
 
 **Params**
 
-- fileReadStream `FileReadStream`
-- callback `function`
+- fileReadStream `FileReadStream`  
+- callback `function`  
 
 <a name="PokitDok#insurancePrices"></a>
 ###pokitDok.insurancePrices(options, callback)
@@ -332,8 +331,8 @@ Get a list of insurance prices for a particular CPT Code in a specific Zip Code
 
 **Params**
 
-- options `object` - keys: cpt_code, zip_code
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - keys: cpt_code, zip_code  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -361,7 +360,7 @@ Get a list of payers from the API for use in other EDI transactions.
 
 **Params**
 
-- callback `function` - a callback function that accepts an error and response parameter
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -386,8 +385,8 @@ provider or a 404 error response is returned.  When a npi is specified on the op
 
 **Params**
 
-- options `object` - keys: npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
-- callback `function` - a callback function that accepts an error and response parameter
+- options `object` - keys: npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit  
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -429,7 +428,7 @@ Get a list of trading partners from the API for use in other EDI transactions.
 
 **Params**
 
-- callback `function` - a callback function that accepts an error and response parameter
+- callback `function` - a callback function that accepts an error and response parameter  
 
 **Example**  
 ```js
@@ -446,6 +445,16 @@ pokitdok.tradingPartners(function (err, res) {
 });
 ```
 
+**Example**  
+```js
+// print a single trading partner
+pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    console.log(res.data.name + ':' + res.data.id);
+});
+```
 
 
 

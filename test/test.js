@@ -57,7 +57,7 @@ describe('PokitDok', function () {
                 assert.equal(res.data instanceof Array, true);
                 assert.equal(res.data[0].cpt_code == '90658', true);
                 assert.equal(res.data[0].geo_zip_area == '944', true);
-                assert.equal(res.data[0].average_price == 45.58, true);
+                assert.equal(res.data[0].average == 45.58, true);
                 done();
             });
         });
@@ -185,7 +185,7 @@ describe('PokitDok', function () {
                 assert.equal(null, err);
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Array, true);
-                assert.equal(res.data.length, 2);
+                assert.equal(res.data.length, 3);
                 done();
             });
         });
@@ -209,6 +209,15 @@ describe('PokitDok', function () {
                 assert.equal(null, err);
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Array, true);
+                done();
+            });
+        });
+
+        it('should return a single trading partners', function (done) {
+            pokitdok.tradingPartners({id: 'MOCKPAYER'}, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
                 done();
             });
         });
