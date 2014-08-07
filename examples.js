@@ -158,6 +158,29 @@ pokitdok.eligibility({
     console.log(res.data);
 });
 
+//// get enrollment for a member for a specific provider
+pokitdok.enrollment({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    service_types: ['health_benefit_plan_coverage'],
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member enrollment
+    console.log(res.data);
+});
+
 // get general eligibility for a member for a specific provider using a CPT code
 pokitdok.eligibility({
     member: {
