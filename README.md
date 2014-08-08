@@ -38,6 +38,7 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.claims(options, callback)](#PokitDok#claims)
   * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
   * [pokitDok.eligibility(options, callback)](#PokitDok#eligibility)
+  * [pokitDok.enrollment(options, callback)](#PokitDok#enrollment)
   * [pokitDok.files(fileReadStream, callback)](#PokitDok#files)
   * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.payers(callback)](#PokitDok#payers)
@@ -145,7 +146,7 @@ pokitdok.cashPrices({
     // print the cpt, geo_zip and average price
     for (var i = 0, ilen = res.data.length; i < ilen; i++) {
         var price = res.data[i];
-        console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average_price);
+        console.log(price.cpt_code + ':' + price.geo_zip_area +  ':' + price.average);
     }
 });
 ```
@@ -316,6 +317,42 @@ pokitdok.eligibility({
 });
 ```
 
+<a name="PokitDok#enrollment"></a>
+###pokitDok.enrollment(options, callback)
+Get an enrollment response from a trading partner based on the provided enrollment document (provider, member,
+cpt code, service_types)
+
+**Params**
+
+- options `object` - keys: provider, service_types, member, cpt_code, trading_partner_id  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+// get general enrollment for a member for a specific provider
+pokitdok.enrollment({
+    member: {
+        birth_date: '1970-01-01',
+        first_name: 'Jane',
+        last_name: 'Doe',
+        id: 'W000000000'
+    },
+    provider: {
+        first_name: 'JEROME',
+        last_name: 'AYA-AY',
+        npi: '1467560003'
+    },
+    service_types: ['health_benefit_plan_coverage'],
+    trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the member enrollment for the specified provider
+    console.log(res.data);
+});
+```
+
 <a name="PokitDok#files"></a>
 ###pokitDok.files(fileReadStream, callback)
 Submit a raw X12 file to the pokitdok platform for processing
@@ -455,7 +492,6 @@ pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
     console.log(res.data.name + ':' + res.data.id);
 });
 ```
-
 
 
 ## License

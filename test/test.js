@@ -180,7 +180,7 @@ describe('PokitDok', function () {
                 zipcode: 94118,
                 last_name: 'shen',
                 radius: '10mi',
-                limit: 2
+                limit: 3
             }, function (err, res) {
                 assert.equal(null, err);
                 assert.equal(res.meta instanceof Object, true);
@@ -248,6 +248,31 @@ describe('PokitDok', function () {
         });
 
         it('get general eligibility for a member for a specific provider using a CPT code should return a status response', function (done) {
+            pokitdok.eligibility({
+                member: {
+                    birth_date: '1970-01-01',
+                    first_name: 'Jane',
+                    last_name: 'Doe',
+                    id: 'W000000000'
+                },
+                provider: {
+                    first_name: 'JEROME',
+                    last_name: 'AYA-AY',
+                    npi: '1467560003'
+                },
+                cpt_code: '81291',
+                trading_partner_id: 'MOCKPAYER'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
+    describe('#enrollment()', function () {
+        it('enrollment for a member for a specific provider should return a status response', function (done) {
             pokitdok.eligibility({
                 member: {
                     birth_date: '1970-01-01',
