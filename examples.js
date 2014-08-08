@@ -279,5 +279,6 @@ pokitdok.tradingPartners({id: 'MOCKPAYER'}, function (err, res) {
         return console.log(err, res.statusCode);
     }
     // print the info received
+    console.log("Single Trading Partner query for 'MOCKPAYER'")
     console.log(res.data.name + ':' + res.data.id);
 });
