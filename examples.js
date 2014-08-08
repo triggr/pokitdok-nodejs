@@ -272,3 +272,13 @@ pokitdok.tradingPartners(function (err, res) {
         console.log(tradingPartner.name + ':' + tradingPartner.id);
     }
 });
+
+//// print a single trading partner name : id pair from a specific query
+pokitdok.tradingPartners({id: 'MOCKPAYER'}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the info received
+    console.log("Single Trading Partner query for 'MOCKPAYER'")
+    console.log(res.data.name + ':' + res.data.id);
+});

@@ -540,6 +540,8 @@ PokitDok.prototype.providers = function (options, callback) {
     }, callback);
 };
 
+
+
 /**
  * Get a list of trading partners from the API for use in other EDI transactions.
  * @param {function} callback - a callback function that accepts an error and response parameter
@@ -557,10 +559,26 @@ PokitDok.prototype.providers = function (options, callback) {
  *      }
  *  });
  *  ```
+ * @example
+ *  ```js
+ *  // print a single trading partner
+ *  pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      console.log(res.data.name + ':' + res.data.id);
+ *  });
+ *  ```
  */
-PokitDok.prototype.tradingPartners = function (callback) {
+PokitDok.prototype.tradingPartners = function(options, callback){
+    var token = '';
+    if (options instanceof Function) {
+        callback = options;
+    } else {
+        token = options.id || '';
+    }
     apiRequest(this, {
-        path: '/tradingpartners/',
+        path: '/tradingpartners/' + token,
         method: 'GET'
     }, callback);
 };

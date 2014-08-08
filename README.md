@@ -482,6 +482,16 @@ pokitdok.tradingPartners(function (err, res) {
 });
 ```
 
+**Example**  
+```js
+// print a single trading partner
+pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    console.log(res.data.name + ':' + res.data.id);
+});
+```
 
 
 ## License
