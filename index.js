@@ -583,5 +583,49 @@ PokitDok.prototype.tradingPartners = function(options, callback){
     }, callback);
 };
 
+/**
+ * Get information about available plans based on parameters given
+ * @param {object} options - keys: trading_partner_id, county, state, plan_id, plan_type, plan_name, metallic_level
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // fetch any plan information
+ *  pokitdok.plans(function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the plan names and ids
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var plan = res.data[i];
+ *          console.log(plan.plan_name + ':' + plan.plan_id);
+ *      }
+ *  });
+ *  ```
+ * @example
+ *  ```js
+ *  // fetch plan information for PPOs in Texas
+ *  pokitdok.plans({plan_type:'PPO', state: 'TX'}, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the plan names and ids
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var plan = res.data[i];
+ *          console.log(plan.plan_name + ':' + plan.plan_id);
+ *      }
+ *  });
+ *  ```
+ */
+PokitDok.prototype.plans = function(options, callback){
+    if (options instanceof Function) {
+        callback = options;
+    }
+    apiRequest(this, {
+        path: '/plans/',
+        method: 'GET',
+        qs: options
+    }, callback);
+};
+
 // expose the constructor
 module.exports = PokitDok;

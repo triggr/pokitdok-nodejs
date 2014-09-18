@@ -57,7 +57,7 @@ describe('PokitDok', function () {
                 assert.equal(res.data instanceof Array, true);
                 assert.equal(res.data[0].cpt_code == '90658', true);
                 assert.equal(res.data[0].geo_zip_area == '944', true);
-                assert.equal(res.data[0].average == 45.58, true);
+                assert.equal(res.data[0].average_price == 62.15272966703196, true);
                 done();
             });
         });
@@ -218,6 +218,26 @@ describe('PokitDok', function () {
                 assert.equal(null, err);
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
+    describe('#plans()', function () {
+        it('should return a general list of plans', function (done) {
+            pokitdok.plans(function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Array, true);
+                done();
+            });
+        });
+
+        it('should return a list of plans in TX', function (done) {
+            pokitdok.plans({state: 'TX', plan_type: 'PPO'}, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Array, true);
                 done();
             });
         });
