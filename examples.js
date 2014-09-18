@@ -282,3 +282,27 @@ pokitdok.tradingPartners({id: 'MOCKPAYER'}, function (err, res) {
     console.log("Single Trading Partner query for 'MOCKPAYER'")
     console.log(res.data.name + ':' + res.data.id);
 });
+
+//// fetch any plan information
+pokitdok.plans({}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the plan names and ids
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var plan = res.data[i];
+        console.log(plan.plan_name + ':' + plan.plan_id);
+    }
+});
+
+//// fetch plan information for PPOs in Texas
+pokitdok.plans({plan_type:'PPO', state: 'TX'}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the plan names and ids
+    for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+        var plan = res.data[i];
+        console.log(plan.plan_name + ':' + plan.plan_id);
+    }
+});
