@@ -284,7 +284,7 @@ pokitdok.tradingPartners({id: 'MOCKPAYER'}, function (err, res) {
 });
 
 //// fetch any plan information
-pokitdok.plans({}, function (err, res) {
+pokitdok.plans(function (err, res) {
     if (err) {
         return console.log(err, res.statusCode);
     }

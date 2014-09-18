@@ -590,7 +590,7 @@ PokitDok.prototype.tradingPartners = function(options, callback){
  * @example
  *  ```js
  *  // fetch any plan information
- *  pokitdok.plans({}, function (err, res) {
+ *  pokitdok.plans(function (err, res) {
  *      if (err) {
  *          return console.log(err, res.statusCode);
  *      }
@@ -617,6 +617,9 @@ PokitDok.prototype.tradingPartners = function(options, callback){
  *  ```
  */
 PokitDok.prototype.plans = function(options, callback){
+    if (options instanceof Function) {
+        callback = options;
+    }
     apiRequest(this, {
         path: '/plans/',
         method: 'GET',

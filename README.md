@@ -506,7 +506,7 @@ Get information about available plans based on parameters given
 **Example**  
 ```js
 // fetch any plan information
-pokitdok.plans({}, function (err, res) {
+pokitdok.plans(function (err, res) {
     if (err) {
         return console.log(err, res.statusCode);
     }
