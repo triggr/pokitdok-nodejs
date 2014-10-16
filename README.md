@@ -34,6 +34,7 @@ This library aims to support and is tested against these NodeJS versions, using 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
   * [pokitDok.activities(options, callback)](#PokitDok#activities)
+  * [pokitDok.authorizations(options, callback)](#PokitDok#authorizations)
   * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
   * [pokitDok.claims(options, callback)](#PokitDok#claims)
   * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
@@ -43,6 +44,7 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
+  * [pokitDok.referrals(options, callback)](#PokitDok#referrals)
   * [pokitDok.tradingPartners(callback)](#PokitDok#tradingPartners)
   * [pokitDok.plans(options, callback)](#PokitDok#plans)
 
@@ -122,6 +124,69 @@ pokitdok.activities({
     }
     // print the activity name status and id
     console.log(res.data.id + ':' + res.data.name + ':' + res.data.state.name);
+});
+```
+
+<a name="PokitDok#authorizations"></a>
+###pokitDok.authorizations(options, callback)
+The Authorizations resource allows an application to submit a request for the
+review of health care in order to obtain an authorization for that health care.
+
+**Params**
+
+- options `object` - the authorizations query  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+// submit an authorizations request
+pokitdok.authorizations({
+    event: {
+           category: 'health_services_review',
+           certification_type: 'initial',
+           delivery: {
+               quantity: 1,
+               quantity_qualifier: 'visits'
+           },
+           diagnoses: [
+               {
+                   code: '789.00',
+                   date: '2014-10-01'
+               }
+           ],
+           place_of_service: 'office',
+           provider: {
+               organization_name: 'KELLY ULTRASOUND CENTER, LLC',
+               npi: '1760779011',
+               phone: '8642341234'
+           },
+           services: [
+               {
+                   cpt_code: '76700',
+                   measurement: 'unit',
+                   quantity: 1
+               }
+           ],
+           type: 'diagnostic_imaging'
+       },
+       patient: {
+           birth_date: '1970-01-01',
+           first_name: 'JANE',
+           last_name: 'DOE',
+           id: '1234567890'
+       },
+       provider: {
+           first_name: 'JEROME',
+           npi: '1467560003',
+           last_name: 'AYA-AY'
+       },
+       trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the correlation_id and trading_partner_id of the authorization
+    console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
 });
 ```
 
@@ -457,6 +522,62 @@ pokitdok.providers({
     }
     // res.data is a single result
     console.log(res.data.provider.first_name + ' ' + res.data.provider.last_name);
+});
+```
+
+<a name="PokitDok#referrals"></a>
+###pokitDok.referrals(options, callback)
+The Referrals resource allows an application to request approval for a referral to another health care provider.
+
+**Params**
+
+- options `object` - the authorizations query  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+// submit a referral request for approval
+pokitdok.referrals({
+    event: {
+           category: 'specialty_care_review',
+           certification_type: 'initial',
+           delivery: {
+               quantity: 1,
+               quantity_qualifier: 'visits'
+           },
+           diagnoses: [
+               {
+                   code: '384.20',
+                   date: '2014-09-30'
+               }
+           ],
+           place_of_service: 'office',
+           provider: {
+               first_name: 'JOHN',
+               npi: '1154387751',
+               last_name: 'FOSTER',
+               phone: '8645822900'
+           },
+           type: 'consultation'
+       },
+       patient: {
+           birth_date: '1970-01-01',
+           first_name: 'JANE',
+           last_name: 'DOE',
+           id: '1234567890'
+       },
+       provider: {
+           first_name: 'CHRISTINA',
+           last_name: 'BERTOLAMI',
+           npi: '1619131232'
+       },
+       trading_partner_id: 'MOCKPAYER'
+}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    // print the correlation_id and trading_partner_id of the referral
+    console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
 });
 ```
 

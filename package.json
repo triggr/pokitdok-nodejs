@@ -12,8 +12,8 @@
     "prices",
     "healthcare"
   ],
-  "version": "0.0.6",
-  "author": "Chris Wilhite",
+  "version": "0.0.7",
+  "author": "PokitDok",
   "repository": {
     "type": "git",
     "url": "https://github.com/pokitdok/pokitdok-nodejs.git"
