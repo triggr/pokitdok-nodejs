@@ -46,6 +46,58 @@ describe('PokitDok', function () {
         });
     });
 
+    describe('#authorizations()', function () {
+        it('should return a status response', function (done) {
+            pokitdok.authorizations({
+                event: {
+                    category: 'health_services_review',
+                    certification_type: 'initial',
+                    delivery: {
+                        quantity: 1,
+                        quantity_qualifier: 'visits'
+                    },
+                    diagnoses: [
+                        {
+                            code: '789.00',
+                            date: '2014-10-01'
+                        }
+                    ],
+                    place_of_service: 'office',
+                    provider: {
+                        organization_name: 'KELLY ULTRASOUND CENTER, LLC',
+                        npi: '1760779011',
+                        phone: '8642341234'
+                    },
+                    services: [
+                        {
+                            cpt_code: '76700',
+                            measurement: 'unit',
+                            quantity: 1
+                        }
+                    ],
+                    type: 'diagnostic_imaging'
+                },
+                patient: {
+                    birth_date: '1970-01-01',
+                    first_name: 'JANE',
+                    last_name: 'DOE',
+                    id: '1234567890'
+                },
+                provider: {
+                    first_name: 'JEROME',
+                    npi: '1467560003',
+                    last_name: 'AYA-AY'
+                },
+                trading_partner_id: 'MOCKPAYER'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
     describe('#cashPrices()', function () {
         it('should return a list prices', function (done) {
             pokitdok.cashPrices({
@@ -56,8 +108,6 @@ describe('PokitDok', function () {
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Array, true);
                 assert.equal(res.data[0].cpt_code == '90658', true);
-                assert.equal(res.data[0].geo_zip_area == '944', true);
-                assert.equal(res.data[0].average_price == 62.15272966703196, true);
                 done();
             });
         });
@@ -180,12 +230,12 @@ describe('PokitDok', function () {
                 zipcode: 94118,
                 last_name: 'shen',
                 radius: '10mi',
-                limit: 3
+                limit: 4
             }, function (err, res) {
                 assert.equal(null, err);
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Array, true);
-                assert.equal(res.data.length, 3);
+                assert.equal(res.data.length, 4);
                 done();
             });
         });
@@ -198,6 +248,52 @@ describe('PokitDok', function () {
                 assert.equal(res.meta instanceof Object, true);
                 assert.equal(res.data instanceof Object, true);
                 assert.equal(res.data.provider.npi, 1881692002);
+                done();
+            });
+        });
+    });
+
+    describe('#referrals()', function () {
+        it('should return a status response', function (done) {
+            pokitdok.referrals({
+                event: {
+                    category: 'specialty_care_review',
+                    certification_type: 'initial',
+                    delivery: {
+                        quantity: 1,
+                        quantity_qualifier: 'visits'
+                    },
+                    diagnoses: [
+                        {
+                            code: '384.20',
+                            date: '2014-09-30'
+                        }
+                    ],
+                    place_of_service: 'office',
+                    provider: {
+                        first_name: 'JOHN',
+                        npi: '1154387751',
+                        last_name: 'FOSTER',
+                        phone: '8645822900'
+                    },
+                    type: 'consultation'
+                },
+                patient: {
+                    birth_date: '1970-01-01',
+                    first_name: 'JANE',
+                    last_name: 'DOE',
+                    id: '1234567890'
+                },
+                provider: {
+                    first_name: 'CHRISTINA',
+                    last_name: 'BERTOLAMI',
+                    npi: '1619131232'
+                },
+                trading_partner_id: 'MOCKPAYER'
+            }, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
                 done();
             });
         });

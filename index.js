@@ -178,6 +178,72 @@ PokitDok.prototype.activities = function (options, callback) {
 };
 
 /**
+ * The Authorizations resource allows an application to submit a request for the
+ * review of health care in order to obtain an authorization for that health care.
+ * @param {object} options - the authorizations query
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // submit an authorizations request
+ *  pokitdok.authorizations({
+ *      event: {
+            category: 'health_services_review',
+            certification_type: 'initial',
+            delivery: {
+                quantity: 1,
+                quantity_qualifier: 'visits'
+            },
+            diagnoses: [
+                {
+                    code: '789.00',
+                    date: '2014-10-01'
+                }
+            ],
+            place_of_service: 'office',
+            provider: {
+                organization_name: 'KELLY ULTRASOUND CENTER, LLC',
+                npi: '1760779011',
+                phone: '8642341234'
+            },
+            services: [
+                {
+                    cpt_code: '76700',
+                    measurement: 'unit',
+                    quantity: 1
+                }
+            ],
+            type: 'diagnostic_imaging'
+        },
+        patient: {
+            birth_date: '1970-01-01',
+            first_name: 'JANE',
+            last_name: 'DOE',
+            id: '1234567890'
+        },
+        provider: {
+            first_name: 'JEROME',
+            npi: '1467560003',
+            last_name: 'AYA-AY'
+        },
+        trading_partner_id: 'MOCKPAYER'
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the correlation_id and trading_partner_id of the authorization
+ *      console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
+ *  });
+ *  ```
+ */
+PokitDok.prototype.authorizations = function (options, callback) {
+    apiRequest(this, {
+        path: '/authorizations/',
+        method: 'POST',
+        json: options
+    }, callback);
+};
+
+/**
  * Get a list of cash prices for a particular CPT Code in a specific Zip Code
  * @param {object} options - keys: cpt_code, zip_code
  * @param {function} callback - a callback function that accepts an error and response parameter
@@ -537,6 +603,65 @@ PokitDok.prototype.providers = function (options, callback) {
         path: '/providers/' + token,
         method: 'GET',
         qs: (!options.npi) ? options : null
+    }, callback);
+};
+
+/**
+ * The Referrals resource allows an application to request approval for a referral to another health care provider.
+ * @param {object} options - the authorizations query
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // submit a referral request for approval
+ *  pokitdok.referrals({
+ *      event: {
+            category: 'specialty_care_review',
+            certification_type: 'initial',
+            delivery: {
+                quantity: 1,
+                quantity_qualifier: 'visits'
+            },
+            diagnoses: [
+                {
+                    code: '384.20',
+                    date: '2014-09-30'
+                }
+            ],
+            place_of_service: 'office',
+            provider: {
+                first_name: 'JOHN',
+                npi: '1154387751',
+                last_name: 'FOSTER',
+                phone: '8645822900'
+            },
+            type: 'consultation'
+        },
+        patient: {
+            birth_date: '1970-01-01',
+            first_name: 'JANE',
+            last_name: 'DOE',
+            id: '1234567890'
+        },
+        provider: {
+            first_name: 'CHRISTINA',
+            last_name: 'BERTOLAMI',
+            npi: '1619131232'
+        },
+        trading_partner_id: 'MOCKPAYER'
+ *  }, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the correlation_id and trading_partner_id of the referral
+ *      console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
+ *  });
+ *  ```
+ */
+PokitDok.prototype.referrals = function (options, callback) {
+    apiRequest(this, {
+        path: '/referrals/',
+        method: 'POST',
+        json: options
     }, callback);
 };
 
