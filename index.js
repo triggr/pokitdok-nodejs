@@ -2,7 +2,7 @@
 // should not use JSDoc syntax, or they will end up in the README.md file.
 
 // module globals and imports
-var userAgent = 'pokitdok-nodejs@0.0.1',
+var userAgent = 'pokitdok-nodejs@0.1.0',
     baseUrl = 'https://platform.pokitdok.com',
     request = require('request'),
     _ = require('lodash');
@@ -38,7 +38,7 @@ var refreshAccessToken = function (context, options, callback) {
         }
         // set the access token on the connection
         var token = JSON.parse(body);
-        context.accessToken = token.access_token;
+        context.accessTokens['default'] = token.access_token;
         // process the queue of requests for the current connection
         while (0 < context.retryQueue.length) {
             var reqArgs = context.retryQueue.pop();
@@ -54,7 +54,7 @@ var apiRequest = function (context, options, callback) {
     options.url = baseUrl + '/api/' + context.version + options.path;
     // apply the auth magic
     options.headers = {
-        'Authorization': 'Bearer ' + context.accessToken,
+        'Authorization': 'Bearer ' + context.accessTokens['default'],
         'User Agent': userAgent
     };
     return request(options, function (err, res, body) {
@@ -109,7 +109,7 @@ function PokitDok(clientId, clientSecret, version) {
     this.version = version || 'v4';
     this.refreshActive = false;
     this.retryQueue = [];
-    this.accessToken = null;
+    this.accessTokens = [];
 }
 
 /**
@@ -557,6 +557,49 @@ PokitDok.prototype.payers = function (callback) {
         method: 'GET'
     }, callback);
 };
+
+/**
+ * Get a list of medical procedure codes.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // print the MPC id's
+ *  pokitdok.mpc(function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the name and code of each mpc
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var mpc = res.data[i];
+ *          console.log(mpc.name + ':' + mpc.code);
+ *      }
+ *  });
+ *  ```
+ * @example
+ *  ```js
+ *  // print a mpc
+ *  pokitdok.mpc({id:'12345'}, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      console.log(res.data.name + ':' + res.data.code);
+ *  });
+ *  ```
+ */
+PokitDok.prototype.mpc = function (options, callback) {
+    var token = '';
+    if (options instanceof Function) {
+        callback = options;
+    } else {
+        token = options.id || '';
+    }
+    apiRequest(this, {
+        path: '/mpc/' + token,
+        method: 'GET'
+    }, callback);
+};
+
+
 
 /**
  * Search health care providers in the PokitDok directory. When an id is specified in the options object, a single

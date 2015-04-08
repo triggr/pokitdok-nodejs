@@ -319,6 +319,26 @@ describe('PokitDok', function () {
         });
     });
 
+    describe('#mpc()', function () {
+        it('should return a list of procedure codes', function (done) {
+            pokitdok.mpc(function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Array, true);
+                done();
+            });
+        });
+
+        it('should return a single procedure code', function (done) {
+            pokitdok.mpc({id: '63650'}, function (err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
     describe('#plans()', function () {
         it('should return a general list of plans', function (done) {
             pokitdok.plans(function (err, res) {
