@@ -196,6 +196,18 @@ describe('PokitDok', function () {
         });
     });
 
+    describe('#claimsConvert(', function() {
+        it('should convert a x12 claims file', function(done) {
+            var text = 'valid x12 claim file content';
+            pokitdok.claimsConvert(text, function(err, res) {
+                assert.equal(null, err);
+                assert.equal(res.meta instanceof Object, true);
+                assert.equal(res.data instanceof Object, true);
+                done();
+            });
+        });
+    });
+
     describe('#insurancePrices()', function () {
         it('should return a single price', function (done) {
             pokitdok.insurancePrices({
@@ -276,7 +288,7 @@ describe('PokitDok', function () {
                         last_name: 'FOSTER',
                         phone: '8645822900'
                     },
-                    type: 'consultation'
+                    type: ' ultation'
                 },
                 patient: {
                     birth_date: '1970-01-01',
