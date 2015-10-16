@@ -288,7 +288,7 @@ describe('PokitDok', function () {
                         last_name: 'FOSTER',
                         phone: '8645822900'
                     },
-                    type: ' ultation'
+                    type: 'consultation'
                 },
                 patient: {
                     birth_date: '1970-01-01',
