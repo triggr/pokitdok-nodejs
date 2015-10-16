@@ -27,14 +27,13 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "async": "^1.4.2",
-    "lodash": "^3.10.1",
-    "request": "^2.37.0"
+    "lodash": "3.10.1",
+    "request": "2.37.0"
   },
   "devDependencies": {
-    "async": "^0.9.0",
-    "jsdoc-to-markdown": "^0.5.5",
-    "mocha": "^2.3.3"
+    "async": "1.4.2",
+    "jsdoc-to-markdown": "0.5.5",
+    "mocha": "2.3.3"
   },
   "scripts": {
     "docs": "jsdoc2md -t docs/README.hbs index.js > README.md"
