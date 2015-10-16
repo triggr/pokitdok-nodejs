@@ -33,8 +33,8 @@
   },
   "devDependencies": {
     "async": "^0.9.0",
-    "mocha": "^1.21.4",
-    "jsdoc-to-markdown": "^0.5.5"
+    "jsdoc-to-markdown": "^0.5.5",
+    "mocha": "^2.3.3"
   },
   "scripts": {
     "docs": "jsdoc2md -t docs/README.hbs index.js > README.md"
