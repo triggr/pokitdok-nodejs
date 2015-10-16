@@ -27,6 +27,7 @@
   ],
   "main": "index.js",
   "dependencies": {
+    "async": "^1.4.2",
     "lodash": "^3.10.1",
     "request": "^2.37.0"
   },
