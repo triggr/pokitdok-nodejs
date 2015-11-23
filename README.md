@@ -38,6 +38,7 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
   * [pokitDok.claims(options, callback)](#PokitDok#claims)
   * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
+  * [pokitDok.claimsConvert(x12ClaimsFile:, callback)](#PokitDok#claimsConvert)
   * [pokitDok.eligibility(options, callback)](#PokitDok#eligibility)
   * [pokitDok.enrollment(options, callback)](#PokitDok#enrollment)
   * [pokitDok.files(fileReadStream, callback)](#PokitDok#files)
@@ -320,6 +321,26 @@ pokitdok.claimStatus({
     console.log(res.data.correlation_id + ':' + res.data.trading_partner_id);
 });
 ```
+
+<a name="PokitDok#claimsConvert"></a>
+###pokitDok.claimsConvert(x12ClaimsFile:, callback)
+Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
+
+**Params**
+
+- x12ClaimsFile:  - a X12 claims file to be submitted to the platform for processing  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+var text = 'valid x12 claim file content';
+pokitdok.claimsConvert(text, function(err, res) {
+    if (err) {
+         return console.log(err, res.statusCode);
+     }
+     // print the converted data
+     console.log(res.data);
+});
 
 <a name="PokitDok#eligibility"></a>
 ###pokitDok.eligibility(options, callback)
