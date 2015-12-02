@@ -58,8 +58,13 @@ var apiRequest = function (context, options, callback) {
         'User Agent': userAgent
     };
     return request(options, function (err, res, body) {
+        // handle invalid file reqs
+        if (!options.json && typeof body == 'string' && body.indexOf('{') === 0) {
+            body = JSON.parse(body);
+            res.body = JSON.parse(res.body);
+        }
         // if a 401 is returned, hit the refresh token process
-        if (res.statusCode == 401 || res.statusCode == 400) {
+        if (res.statusCode == 401 || (res.statusCode == 400 && !body.meta)) {
             return refreshAccessToken(context, options, callback);
         }
         // all other error codes get sent to the caller
@@ -380,6 +385,37 @@ PokitDok.prototype.claimStatus = function (options, callback) {
         path: '/claims/status',
         method: 'POST',
         json: options
+    }, callback);
+};
+
+/**
+ * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
+ * @param  x12ClaimsFile: a X12 claims file to be submitted to the platform for processing
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ * ```js
+ * var text = 'valid x12 claim file content';
+ * pokitdok.claimsConvert(text, function(err, res) {
+ *     if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the converted data
+ *      console.log(res.data);
+ * });
+ */
+PokitDok.prototype.claimsConvert = function(x12Content, callback) {
+    apiRequest(this, {
+        path: '/claims/convert',
+        method: 'POST',
+        formData: {
+            file: {
+                value: x12Content,
+                options: {
+                    filename: 'x12claim.txt',
+                    contentType: 'text/plain'
+                }
+            }
+        }
     }, callback);
 };
 
