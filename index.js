@@ -23,7 +23,7 @@ var refreshAccessToken = function (context, options, callback) {
         method: 'POST',
         headers: {
             'Authorization': 'Basic ' + new Buffer(context.clientId + ':' + context.clientSecret).toString('base64'),
-            'User Agent': userAgent
+            'User-Agent': userAgent
         },
         form: {
             grant_type: 'client_credentials'
@@ -55,7 +55,7 @@ var apiRequest = function (context, options, callback) {
     // apply the auth magic
     options.headers = {
         'Authorization': 'Bearer ' + context.accessToken,
-        'User Agent': userAgent
+        'User-Agent': userAgent
     };
     return request(options, function (err, res, body) {
         // handle invalid file reqs
