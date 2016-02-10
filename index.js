@@ -42,49 +42,9 @@ var refreshAccessToken = function (context, options, callback) {
         // process the queue of requests for the current connection
         while (0 < context.retryQueue.length) {
             var reqArgs = context.retryQueue.pop();
-            apiRequest(context, reqArgs[0], reqArgs[1]);
+            context.apiRequest(reqArgs[0], reqArgs[1]);
         }
     });
-};
-
-// a private function to make a request to the platform api. Handles 401's so that the
-// access token is automatically created/refreshed.
-var apiRequest = function (context, options, callback) {
-    // build the default url for the requests
-    options.url = baseUrl + '/api/' + context.version + options.path;
-    // apply the auth magic
-    options.headers = {
-        'Authorization': 'Bearer ' + context.accessToken,
-        'User-Agent': userAgent
-    };
-    return request(options, function (err, res, body) {
-        // handle invalid file reqs
-        if (!options.json && typeof body == 'string' && body.indexOf('{') === 0) {
-            body = JSON.parse(body);
-            res.body = JSON.parse(res.body);
-        }
-        // if a 401 is returned, hit the refresh token process
-        if (res.statusCode == 401 || (res.statusCode == 400 && !body.meta)) {
-            return refreshAccessToken(context, options, callback);
-        }
-        // all other error codes get sent to the caller
-        if (res.statusCode != 200) {
-            return callback && callback(res.body, res);
-        }
-        // only return javascript objects to callers on 200's
-        var data = {};
-        try {
-            data = JSON.parse(body);
-        } catch (err) {
-            data = body;
-        }
-        callback && callback(null, data);
-    });
-};
-
-// clean up parameters
-var formatParameters = function (options, callback) {
-
 };
 
 /**
@@ -116,6 +76,71 @@ function PokitDok(clientId, clientSecret, version) {
     this.retryQueue = [];
     this.accessToken = null;
 }
+
+
+/**
+ * A generic API request that is used by all specific endpoints functions like `pokitdok.activities(...)` and
+ * `pokitdok.CashPrices(...)`.
+ *
+ * @param {object} options - keys: `path`, `method`, `qs`, `json`. The path is the desired API endpoint, such as `/activities` or `/tradingpartners`. Method is the desired `HTTP` request method. qs is the query string containing request paramaters, and json is a json object containing request options.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *     // Get a list of activities using the generic pokitdok.apiRequest(...) function.
+ *     // This has the same result as the first pokidtdok.activities(...) example.
+ *     pokitdok.apiRequest({
+ *         path: '/activities/' + token,
+ *         method: (options.transition && options.id) ? 'PUT' : 'GET',
+ *         qs: (!options.id) ? options : null,
+ *         json: {
+ *             transition: options.transition
+ *         }
+ *     }, function(err, res) {
+ *        if (err) {
+ *          return console.log(err, res.statusCode);
+ *        }
+ *        // print the activity name status and id
+ *        for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *            var activity = res.data[i];
+ *            console.log(activity.id + ':' + activity.name + ':' + activity.state.name);
+ *        }
+ *     });
+ *  ```
+ */
+PokitDok.prototype.apiRequest = function (options, callback) {
+    var self = this;
+    // build the default url for the requests
+    options.url = baseUrl + '/api/' + self.version + options.path;
+    // apply the auth magic
+    options.headers = {
+        'Authorization': 'Bearer ' + self.accessToken,
+        'User-Agent': userAgent
+    };
+    return request(options, function (err, res, body) {
+        // handle invalid file reqs
+        if (!options.json && typeof body == 'string' && body.indexOf('{') === 0) {
+            body = JSON.parse(body);
+            res.body = JSON.parse(res.body);
+        }
+        // if a 401 is returned, hit the refresh token process
+        if (res.statusCode == 401 || (res.statusCode == 400 && !body.meta)) {
+            return refreshAccessToken(self, options, callback);
+        }
+        // all other error codes get sent to the caller
+        if (res.statusCode != 200) {
+            return callback && callback(res.body, res);
+        }
+        // only return javascript objects to callers on 200's
+        var data = {};
+        try {
+            data = JSON.parse(body);
+        } catch (err) {
+            data = body;
+        }
+        callback && callback(null, data);
+    });
+};
+
 
 /**
  * Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
@@ -172,7 +197,7 @@ PokitDok.prototype.activities = function (options, callback) {
         options = {};
     }
     var token = options.id || '';
-    apiRequest(this, {
+    this.apiRequest({
         path: '/activities/' + token,
         method: (options.transition && options.id) ? 'PUT' : 'GET',
         qs: (!options.id) ? options : null,
@@ -241,7 +266,7 @@ PokitDok.prototype.activities = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.authorizations = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/authorizations/',
         method: 'POST',
         json: options
@@ -271,7 +296,7 @@ PokitDok.prototype.authorizations = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.cashPrices = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/prices/cash',
         method: 'GET',
         qs: options
@@ -340,7 +365,7 @@ PokitDok.prototype.cashPrices = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.claims = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/claims/',
         method: 'POST',
         json: options
@@ -381,7 +406,7 @@ PokitDok.prototype.claims = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.claimStatus = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/claims/status',
         method: 'POST',
         json: options
@@ -404,7 +429,7 @@ PokitDok.prototype.claimStatus = function (options, callback) {
  * });
  */
 PokitDok.prototype.claimsConvert = function(x12Content, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/claims/convert',
         method: 'POST',
         formData: {
@@ -476,7 +501,7 @@ PokitDok.prototype.claimsConvert = function(x12Content, callback) {
  *  ```
  */
 PokitDok.prototype.eligibility = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/eligibility/',
         method: 'POST',
         json: options
@@ -516,7 +541,7 @@ PokitDok.prototype.eligibility = function (options, callback) {
 PokitDok.prototype.enrollment = function (options, callback) {
     // basic file validation
     // encode file for delivery over http
-    apiRequest(this, {
+    this.apiRequest({
         path: '/enrollment/',
         method: 'POST',
         json: options
@@ -531,7 +556,7 @@ PokitDok.prototype.enrollment = function (options, callback) {
 PokitDok.prototype.files = function (fileReadStream, callback) {
     // basic file validation
     // encode file for delivery over http
-    fileReadStream.pipe(apiRequest(this, {
+    fileReadStream.pipe(this.apiRequest({
         path: '/files/',
         method: 'POST'
     }, callback));
@@ -562,7 +587,7 @@ PokitDok.prototype.files = function (fileReadStream, callback) {
  *  ```
  */
 PokitDok.prototype.insurancePrices = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/prices/insurance',
         method: 'GET',
         qs: options
@@ -588,7 +613,7 @@ PokitDok.prototype.insurancePrices = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.payers = function (callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/payers/',
         method: 'GET'
     }, callback);
@@ -635,7 +660,7 @@ PokitDok.prototype.payers = function (callback) {
  */
 PokitDok.prototype.providers = function (options, callback) {
     var token = options.npi || '';
-    apiRequest(this, {
+    this.apiRequest({
         path: '/providers/' + token,
         method: 'GET',
         qs: (!options.npi) ? options : null
@@ -694,7 +719,7 @@ PokitDok.prototype.providers = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.referrals = function (options, callback) {
-    apiRequest(this, {
+    this.apiRequest({
         path: '/referrals/',
         method: 'POST',
         json: options
@@ -738,7 +763,7 @@ PokitDok.prototype.tradingPartners = function(options, callback){
     } else {
         token = options.id || '';
     }
-    apiRequest(this, {
+    this.apiRequest({
         path: '/tradingpartners/' + token,
         method: 'GET'
     }, callback);
@@ -781,7 +806,7 @@ PokitDok.prototype.plans = function(options, callback){
     if (options instanceof Function) {
         callback = options;
     }
-    apiRequest(this, {
+    this.apiRequest({
         path: '/plans/',
         method: 'GET',
         qs: options

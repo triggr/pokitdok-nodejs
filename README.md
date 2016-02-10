@@ -33,6 +33,7 @@ This library aims to support and is tested against these NodeJS versions, using 
 
 * [class: PokitDok](#PokitDok)
   * [new PokitDok(clientId, clientSecret, version)](#new_PokitDok)
+  * [pokitDok.apiRequest(options, callback)](#PokitDok#apiRequest)
   * [pokitDok.activities(options, callback)](#PokitDok#activities)
   * [pokitDok.authorizations(options, callback)](#PokitDok#authorizations)
   * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
@@ -72,6 +73,37 @@ var pokitdok = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK
 // get a connection to the PokitDok Platform for version 3
 var PokitDok = require('pokitdok-nodejs');
 var pokitdokV3 = new PokitDok(process.env.POKITDOK_CLIENT_ID, process.env.POKITDOK_CLIENT_SECRET, 'v3');
+```
+
+<a name="PokitDok#apiRequest"></a>
+###pokitDok.apiRequest(options, callback)
+A generic API request that is used by all specific endpoints functions like `pokitdok.activities(...)` and
+`pokitdok.CashPrices(...)`.
+
+**Params**
+
+- options `object` - keys: `path`, `method`, `qs`, `json`. The path is the desired API endpoint, such as `/activities` or `/tradingpartners`. Method is the desired `HTTP` request method. qs is the query string containing request paramaters, and json is a json object containing request options.  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+   pokitdok.apiRequest({
+       path: '/activities/' + token,
+       method: (options.transition && options.id) ? 'PUT' : 'GET',
+       qs: (!options.id) ? options : null,
+       json: {
+           transition: options.transition
+       }
+   }, function(err, res) {
+      if (err) {
+        return console.log(err, res.statusCode);
+      }
+      // print the activity name status and id
+      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+          var activity = res.data[i];
+          console.log(activity.id + ':' + activity.name + ':' + activity.state.name);
+      }
+   });
 ```
 
 <a name="PokitDok#activities"></a>
