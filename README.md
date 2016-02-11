@@ -341,6 +341,7 @@ pokitdok.claimsConvert(text, function(err, res) {
      // print the converted data
      console.log(res.data);
 });
+```
 
 <a name="PokitDok#eligibility"></a>
 ###pokitDok.eligibility(options, callback)
