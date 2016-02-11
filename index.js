@@ -5,6 +5,7 @@
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
     request = require('request'),
+    fs = require('fs'),
     _ = require('lodash');
 
 // a private function to automatically refresh the access token when receiving a 401.
@@ -75,8 +76,7 @@ function PokitDok(clientId, clientSecret, version) {
     this.refreshActive = false;
     this.retryQueue = [];
     this.accessToken = null;
-}
-
+};
 
 /**
  * A generic API request that is used by all specific endpoints functions like `pokitdok.activities(...)` and
@@ -142,11 +142,24 @@ PokitDok.prototype.apiRequest = function (options, callback) {
 };
 
 
+PokitDok.prototype.apiFileRequest = function(options, callback) {
+    var self = this;
+    var url =  baseUrl + '/api/' + self.version + options.path;
+    console.log(url);
+    console.log(options.data);
+    request.post({
+        url: url,
+        formData: options.data
+    }, callback)
+};
+
 /**
  * Get a list of activities from the API. If an id is passed with the options, get a single activity. You can also
  * change the state of an activity by passing the desired state (pause, cancel, resume) in the transition key.
  * @param {object} options - keys: id, transition
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#activities| See API documentation for more information}
  * @example
  *  ```js
  *  // get a list of activities
@@ -212,6 +225,8 @@ PokitDok.prototype.activities = function (options, callback) {
  * review of health care in order to obtain an authorization for that health care.
  * @param {object} options - the authorizations query
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#authorizationss| See API documentation for more information}
  * @example
  *  ```js
  *  // submit an authorizations request
@@ -277,6 +292,8 @@ PokitDok.prototype.authorizations = function (options, callback) {
  * Get a list of cash prices for a particular CPT Code in a specific Zip Code
  * @param {object} options - keys: cpt_code, zip_code
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#cash-prices| See API documentation for more information}
  * @example
  *  ```js
  *  // print the procedure code and price for a particular zip/cpt combination
@@ -307,6 +324,8 @@ PokitDok.prototype.cashPrices = function (options, callback) {
  * Submit a claim for processing. The API calls back with an activity object that tracks the state of the claim.
  * @param {object} options - the claim document
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#claims| See API documentation for more information}
  * @example
  *  ```js
  *  // submit a claim document
@@ -377,6 +396,8 @@ PokitDok.prototype.claims = function (options, callback) {
  * you have one from the original claim.
  * @param {object} options - the claim status query
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#claims-status| See API documentation for more information}
  * @example
  *  ```js
  *  // get the status of a claim using a date range and tracking id
@@ -414,41 +435,12 @@ PokitDok.prototype.claimStatus = function (options, callback) {
 };
 
 /**
- * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
- * @param  x12ClaimsFile: a X12 claims file to be submitted to the platform for processing
- * @param {function} callback - a callback function that accepts an error and response parameter
- * @example
- * ```js
- * var text = 'valid x12 claim file content';
- * pokitdok.claimsConvert(text, function(err, res) {
- *     if (err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // print the converted data
- *      console.log(res.data);
- * });
- */
-PokitDok.prototype.claimsConvert = function(x12Content, callback) {
-    this.apiRequest({
-        path: '/claims/convert',
-        method: 'POST',
-        formData: {
-            file: {
-                value: x12Content,
-                options: {
-                    filename: 'x12claim.txt',
-                    contentType: 'text/plain'
-                }
-            }
-        }
-    }, callback);
-};
-
-/**
  * Get an eligibility response from a trading partner based on the provided eligibility document (provider, member,
  * cpt code, service_types)
  * @param {object} options - keys: provider, service_types, member, cpt_code, trading_partner_id
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#eligibility| See API documentation for more information}
  * @example
  *  ```js
  *  // get general eligibility for a member for a specific provider
@@ -507,11 +499,15 @@ PokitDok.prototype.eligibility = function (options, callback) {
         json: options
     }, callback);
 };
+
 /**
  * Get an enrollment response from a trading partner based on the provided enrollment document (provider, member,
  * cpt code, service_types)
+ *
  * @param {object} options - keys: provider, service_types, member, cpt_code, trading_partner_id
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#enrollment-snapshot| See API documentation for more information}
  * @example
  *  ```js
  *  // get general enrollment for a member for a specific provider
@@ -552,13 +548,67 @@ PokitDok.prototype.enrollment = function (options, callback) {
  * Submit a raw X12 file to the pokitdok platform for processing
  * @param {FileReadStream} fileReadStream
  * @param {Function} callback
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#files| See API documentation for more information}
+ * @example
+ *  ```js
+ *  // Basic file validation - encodes file for delivery over http
+ *  pokitdok.files(fileReadStream, function(err,res) {
+ *      if ( err ) {
+ *          console.log(err);
+ *      } else {
+ *          console.log(res);
+ *      }
+ *  });
+ *  ```
  */
 PokitDok.prototype.files = function (fileReadStream, callback) {
     // basic file validation
     // encode file for delivery over http
+    // this.apiFileRequest({
+    //     path: '/files/',
+    //     data: {
+    //         file: {
+    //             value: fileReadStream,
+    //             options: {
+    //                 filename: 'somefile.txt'
+    //             }
+    //         }
+    //     }
+    // }, callback);
+
+    // basic file validation
+    // encode file for delivery over http
     fileReadStream.pipe(this.apiRequest({
         path: '/files/',
-        method: 'POST'
+        method: 'POST',
+        formData: {}
+    }, callback));
+};
+
+/**
+ * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
+ * @param  x12ClaimsFile: a X12 claims file to be submitted to the platform for processing
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#claims-convert| See API documentation for more information}
+ * @example
+ * ```js
+ * var text = 'valid x12 claim file content';
+ * pokitdok.claimsConvert(text, function(err, res) {
+ *     if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the converted data
+ *      console.log(res.data);
+ * });
+ */
+PokitDok.prototype.claimsConvert = function(pathToX12File, callback) {
+    var readStream = fs.createReadStream(pathToX12File);
+    readStream.pipe(this.apiRequest({
+        path: '/claims/convert',
+        method: 'POST',
+        formData: {}
     }, callback));
 };
 
@@ -566,6 +616,8 @@ PokitDok.prototype.files = function (fileReadStream, callback) {
  * Get a list of insurance prices for a particular CPT Code in a specific Zip Code
  * @param {object} options - keys: cpt_code, zip_code
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#insurance-prices| See API documentation for more information}
  * @example
  *  ```js
  *  // print the procedure code and price for a particular zip/cpt combination
@@ -597,6 +649,8 @@ PokitDok.prototype.insurancePrices = function (options, callback) {
 /**
  * Get a list of payers from the API for use in other EDI transactions.
  * @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#payers| See API documentation for more information}
  * @example
  *  ```js
  *  // print the trading partner id's, used to identify a payer for other EDI transaction
@@ -620,9 +674,57 @@ PokitDok.prototype.payers = function (callback) {
 };
 
 /**
+ * Get information about available plans based on parameters given
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#plans| See API documentation for more information}
+ * @param {object} options - keys: trading_partner_id, county, state, plan_id, plan_type, plan_name, metallic_level
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // fetch any plan information
+ *  pokitdok.plans(function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the plan names and ids
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var plan = res.data[i];
+ *          console.log(plan.plan_name + ':' + plan.plan_id);
+ *      }
+ *  });
+ *  ```
+ * @example
+ *  ```js
+ *  // fetch plan information for PPOs in Texas
+ *  pokitdok.plans({plan_type:'PPO', state: 'TX'}, function (err, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // print the plan names and ids
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var plan = res.data[i];
+ *          console.log(plan.plan_name + ':' + plan.plan_id);
+ *      }
+ *  });
+ *  ```
+ */
+PokitDok.prototype.plans = function(options, callback){
+    if (options instanceof Function) {
+        callback = options;
+    }
+    this.apiRequest({
+        path: '/plans/',
+        method: 'GET',
+        qs: options
+    }, callback);
+};
+
+/**
  * Search health care providers in the PokitDok directory. When an id is specified in the options object, a single
  * provider or a 404 error response is returned.  When a npi is specified on the options object, a single provider or
  * 404 error is returned. Use any of the other available options to return a list of providers.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#providers| See API documentation for more information}
  * @param {object} options - keys: npi, zipcode, radius, first_name, last_name, specialty, organization_name, limit
  * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
@@ -669,6 +771,8 @@ PokitDok.prototype.providers = function (options, callback) {
 
 /**
  * The Referrals resource allows an application to request approval for a referral to another health care provider.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#referrals| See API documentation for more information}
  * @param {object} options - the authorizations query
  * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
@@ -726,10 +830,10 @@ PokitDok.prototype.referrals = function (options, callback) {
     }, callback);
 };
 
-
-
 /**
  * Get a list of trading partners from the API for use in other EDI transactions.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#trading-partners| See API documentation for more information}
  * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
@@ -766,50 +870,6 @@ PokitDok.prototype.tradingPartners = function(options, callback){
     this.apiRequest({
         path: '/tradingpartners/' + token,
         method: 'GET'
-    }, callback);
-};
-
-/**
- * Get information about available plans based on parameters given
- * @param {object} options - keys: trading_partner_id, county, state, plan_id, plan_type, plan_name, metallic_level
- * @param {function} callback - a callback function that accepts an error and response parameter
- * @example
- *  ```js
- *  // fetch any plan information
- *  pokitdok.plans(function (err, res) {
- *      if (err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // print the plan names and ids
- *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
- *          var plan = res.data[i];
- *          console.log(plan.plan_name + ':' + plan.plan_id);
- *      }
- *  });
- *  ```
- * @example
- *  ```js
- *  // fetch plan information for PPOs in Texas
- *  pokitdok.plans({plan_type:'PPO', state: 'TX'}, function (err, res) {
- *      if (err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // print the plan names and ids
- *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
- *          var plan = res.data[i];
- *          console.log(plan.plan_name + ':' + plan.plan_id);
- *      }
- *  });
- *  ```
- */
-PokitDok.prototype.plans = function(options, callback){
-    if (options instanceof Function) {
-        callback = options;
-    }
-    this.apiRequest({
-        path: '/plans/',
-        method: 'GET',
-        qs: options
     }, callback);
 };
 

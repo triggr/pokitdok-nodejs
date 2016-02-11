@@ -39,10 +39,10 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.cashPrices(options, callback)](#PokitDok#cashPrices)
   * [pokitDok.claims(options, callback)](#PokitDok#claims)
   * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
-  * [pokitDok.claimsConvert(x12ClaimsFile:, callback)](#PokitDok#claimsConvert)
   * [pokitDok.eligibility(options, callback)](#PokitDok#eligibility)
   * [pokitDok.enrollment(options, callback)](#PokitDok#enrollment)
   * [pokitDok.files(fileReadStream, callback)](#PokitDok#files)
+  * [pokitDok.claimsConvert(x12ClaimsFile:, callback)](#PokitDok#claimsConvert)
   * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.payers(callback)](#PokitDok#payers)
   * [pokitDok.providers(options, callback)](#PokitDok#providers)
@@ -87,6 +87,8 @@ A generic API request that is used by all specific endpoints functions like `pok
 
 **Example**  
 ```js
+   // Get a list of activities using the generic pokitdok.apiRequest(...) function.
+   // This has the same result as the first pokidtdok.activities(...) example.
    pokitdok.apiRequest({
        path: '/activities/' + token,
        method: (options.transition && options.id) ? 'PUT' : 'GET',
@@ -114,7 +116,9 @@ change the state of an activity by passing the desired state (pause, cancel, res
 **Params**
 
 - options `object` - keys: id, transition  
-- callback `function` - a callback function that accepts an error and response parameter  
+- callback `function` - a callback function that accepts an error and response parameter
+
+[ See documentation for more information](https://platform.pokitdok.com/documentation/v4/#activities)  
 
 **Example**  
 ```js
@@ -354,26 +358,6 @@ pokitdok.claimStatus({
 });
 ```
 
-<a name="PokitDok#claimsConvert"></a>
-###pokitDok.claimsConvert(x12ClaimsFile:, callback)
-Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
-
-**Params**
-
-- x12ClaimsFile:  - a X12 claims file to be submitted to the platform for processing  
-- callback `function` - a callback function that accepts an error and response parameter  
-
-**Example**  
-```js
-var text = 'valid x12 claim file content';
-pokitdok.claimsConvert(text, function(err, res) {
-    if (err) {
-         return console.log(err, res.statusCode);
-     }
-     // print the converted data
-     console.log(res.data);
-});
-
 <a name="PokitDok#eligibility"></a>
 ###pokitDok.eligibility(options, callback)
 Get an eligibility response from a trading partner based on the provided eligibility document (provider, member,
@@ -480,6 +464,38 @@ Submit a raw X12 file to the pokitdok platform for processing
 
 - fileReadStream `FileReadStream`  
 - callback `function`  
+
+**Example**  
+```js
+// Basic file validation - encodes file for delivery over http
+pokitdok.files(fileReadStream, function(err,res) {
+    if ( err ) {
+        console.log(err);
+    } else {
+        console.log(res);
+    }
+});
+```
+
+<a name="PokitDok#claimsConvert"></a>
+###pokitDok.claimsConvert(x12ClaimsFile:, callback)
+Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
+
+**Params**
+
+- x12ClaimsFile:  - a X12 claims file to be submitted to the platform for processing  
+- callback `function` - a callback function that accepts an error and response parameter  
+
+**Example**  
+```js
+var text = 'valid x12 claim file content';
+pokitdok.claimsConvert(text, function(err, res) {
+    if (err) {
+         return console.log(err, res.statusCode);
+     }
+     // print the converted data
+     console.log(res.data);
+});
 
 <a name="PokitDok#insurancePrices"></a>
 ###pokitDok.insurancePrices(options, callback)
