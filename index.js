@@ -4,6 +4,7 @@
 // module globals and imports
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
+    // baseUrl = 'http://localhost:5002',
     request = require('request'),
     fs = require('fs'),
     _ = require('lodash');
@@ -116,6 +117,7 @@ PokitDok.prototype.apiRequest = function (options, callback) {
         'Authorization': 'Bearer ' + self.accessToken,
         'User-Agent': userAgent
     };
+
     return request(options, function (err, res, body) {
         // handle invalid file reqs
         if (!options.json && typeof body == 'string' && body.indexOf('{') === 0) {
@@ -139,18 +141,6 @@ PokitDok.prototype.apiRequest = function (options, callback) {
         }
         callback && callback(null, data);
     });
-};
-
-
-PokitDok.prototype.apiFileRequest = function(options, callback) {
-    var self = this;
-    var url =  baseUrl + '/api/' + self.version + options.path;
-    console.log(url);
-    console.log(options.data);
-    request.post({
-        url: url,
-        formData: options.data
-    }, callback)
 };
 
 /**
@@ -226,7 +216,7 @@ PokitDok.prototype.activities = function (options, callback) {
  * @param {object} options - the authorizations query
  * @param {function} callback - a callback function that accepts an error and response parameter
  *
- * {@link https://platform.pokitdok.com/documentation/v4/#authorizationss| See API documentation for more information}
+ * {@link https://platform.pokitdok.com/documentation/v4/#authorizations| See API documentation for more information}
  * @example
  *  ```js
  *  // submit an authorizations request
@@ -562,29 +552,58 @@ PokitDok.prototype.enrollment = function (options, callback) {
  *  });
  *  ```
  */
-PokitDok.prototype.files = function (fileReadStream, callback) {
+PokitDok.prototype.files = function (options, callback) {
     // basic file validation
     // encode file for delivery over http
-    // this.apiFileRequest({
-    //     path: '/files/',
-    //     data: {
-    //         file: {
-    //             value: fileReadStream,
-    //             options: {
-    //                 filename: 'somefile.txt'
-    //             }
-    //         }
-    //     }
-    // }, callback);
-
-    // basic file validation
-    // encode file for delivery over http
-    fileReadStream.pipe(this.apiRequest({
+    this.apiRequest({
         path: '/files/',
         method: 'POST',
-        formData: {}
-    }, callback));
+        formData: {
+            files: {
+                'file': fs.createReadStream(options.path_x12_file)
+            }
+        }
+    }, callback);
+
 };
+
+/**
+ * The ICD Convert endpoint allows a client application to request ICD-9 to ICD-10
+ * mapping information for the specified ICD-9 code.
+ * This endpoint retrieves ICD-9 to ICD-10 mapping information.
+ *
+ * @param {object} options An object containing query parameters. Avaiable keys: code (an ICD-9 code)
+ * @param {Function} callback
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#icd-conver| See API documentation for more information}
+ * @example
+ *  ```js
+ *  // Basic ICD-9 to ICD-10 conversion
+ *  pokitdok.icdConvert(icd9Code, function(err,res) {
+ *      if ( err ) {
+ *          console.log(err);
+ *      } else {
+ *         // Print out the ICD-10 values for the destination scenarios choice list
+ *         for ( var i = 0; ilen = res.data.destination_scenarios.choice_lists.length; i < ilen; i++ ) {
+ *             console.log(res.data.destination_scenarios.choice_lists[i].value);
+ *      }
+ *  });
+ *  ```
+ */
+ PokitDok.prototype.icdConvert = function(options, callback) {
+     if (options instanceof Function) {
+         callback = options;
+     }
+     if (!options) {
+         options = {};
+     }
+    var token = options.code || ''
+    this.apiRequest({
+        path: '/icd/convert/' + token,
+        method: 'GET',
+        json: options
+    }, callback);
+ };
 
 /**
  * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
@@ -602,13 +621,14 @@ PokitDok.prototype.files = function (fileReadStream, callback) {
  *      // print the converted data
  *      console.log(res.data);
  * });
+ * ```
  */
 PokitDok.prototype.claimsConvert = function(pathToX12File, callback) {
     var readStream = fs.createReadStream(pathToX12File);
     readStream.pipe(this.apiRequest({
         path: '/claims/convert',
         method: 'POST',
-        formData: {}
+        formData: {},
     }, callback));
 };
 
@@ -647,7 +667,46 @@ PokitDok.prototype.insurancePrices = function (options, callback) {
 };
 
 /**
+ * Get a list of medical procedure information meeting certain search criteria.
+ *
+ *  @param {object} options - possible query string parameters or a specific code. Available query paramters: name, description.
+ *  @param {function} callback - a callback function that accepts an error and response parameter
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#medical-procedure-code| See API documentation for more information}
+ * @example
+ *  ```js
+ *  // Print a list of all code names
+ *  pokitdok.medicalProcedureCodes({}, function(req, res) {
+ *      if (err) {
+ *          return console.log(err, res.statusCode);
+ *      }
+ *      // Print the list
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          console.log(res.data[i].code.name);
+ *      }
+ *  });
+ *  ```
+ */
+PokitDok.prototype.medicalProcedureCodes = function(options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.code || ''
+    this.apiRequest({
+        path: '/mpc/' + token,
+        method: 'GET',
+        qs: (!options.code) ? options : null,
+    }, callback);
+};
+
+/**
  * Get a list of payers from the API for use in other EDI transactions.
+ *
+ * @deprecated starting in version 5.0. Use the `/tradingpartners` endpoint in stead
+ *
  * @param {function} callback - a callback function that accepts an error and response parameter
  *
  * {@link https://platform.pokitdok.com/documentation/v4/#payers| See API documentation for more information}
@@ -823,6 +882,8 @@ PokitDok.prototype.providers = function (options, callback) {
  *  ```
  */
 PokitDok.prototype.referrals = function (options, callback) {
+
+
     this.apiRequest({
         path: '/referrals/',
         method: 'POST',
@@ -831,9 +892,356 @@ PokitDok.prototype.referrals = function (options, callback) {
 };
 
 /**
+ * Get a list of supported scheduling systems and their UUIDs and descriptions or get a single
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Available keys: scheduler_uuid - A scheduling system's unique ID
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Grab a list of schedulers and print their descriptions
+ *  pokitdok.schedulers(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var scheduler = res.data[i];
+ *          console.log(scheduler.description);
+ *      }
+ *  });
+ *
+ *  ```
+ * @example
+ *  ```js
+ *  // Grab a single scheduler and print the scheduler object
+ *  pokitdok.schedulers({
+ *      uuid: schedulersList[0].scheduler_uuid
+ *      }, function(err, res) {
+ *            if (err) {
+ *              return console.log(err);
+ *            }
+ *            console.log();
+ *      });
+ *
+ *  ```
+ */
+PokitDok.prototype.schedulers = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/schedulers/' + token,
+        method: 'GET'
+    }, callback);
+};
+
+/**
+ * Get a list of appointment types, their UUIDs, and descriptions.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Available keys: uuid - An appointment type's unique ID
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Grab a list of appointment types and print their type and descriptions
+ *  pokitdok.appointmentTypes(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var appt_type = res.data[i];
+ *          console.log(appt_type.type + ' - ' + appt_type.description);
+ *      }
+ *  });
+ *
+ *  ```
+ * @example
+ *  ```js
+ *  // Grab a single appointment type and print the appointment type object
+ *  pokitdok.appointmentTypes(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      console.log(res.data);
+ *  });
+ *
+ *  ```
+ */
+PokitDok.prototype.appointmentTypes = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/appointmenttypes/' + token,
+        method: 'GET'
+    }, callback);
+};
+
+/**
+ * Query for open appointment slots (using pd_provider_uuid and location) or booked appointments (using patient_uuid) given query parameters.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Available keys: uuid - An appointment type's unique ID, pd_provider_uuid - A provider's unique ID,
+                                             patient_uuid - an existing patient's unique ID, and location - location {object} for
+                                             a provider or business
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Grab a list of appointment types and print their type and descriptions
+ *  pokitdok.appointments(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      for (var i = 0, ilen = res.data.length; i < ilen; i++) {
+ *          var appt = res.data[i];
+ *          console.log(appt_type.type + ' - ' + appt_type.description);
+ *      }
+ *  });
+ *
+ *  ```
+ * @example
+ *  ```js
+ *  // Grab a single appointment and print the appointment type object
+ *  pokitdok.appointments({
+ *          uuid: 'ef987691-0a19-447f-814d-f8f3abbf4859'
+ *      },
+ *      function(err, res) {
+ *          if (err) {
+ *              return console.log(err);
+ *          }
+ *          console.log(res.data);
+ *      }
+ *  });
+ *
+ *  ```
+ */
+PokitDok.prototype.appointments = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/appointments/' + token,
+        method: 'GET',
+        qs: (!options.uuid) ? options : null
+    }, callback);
+};
+
+/**
+ * Book appointment for an open slot or edit its description. Post data contains patient attributes and description.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Required keys: pd_appointment_uuid,
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Delete an appointment slot with the given uuid
+ *  pokitdok.deleteAppointmentSlot({
+            uuid: ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+        }
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.updateAppointment = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/appointments/' + token,
+        method: 'PUT',
+        options: options
+    }, callback);
+};
+
+/**
+ * Cancel appointment given its {pd_appointment_uuid}.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Required keys: pd_appointment_uuid,
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Delete an appointment slot with the given uuid
+ *  pokitdok.deleteAppointmentSlot({
+            uuid: ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+       }
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.deleteAppointment = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/appointments/' + token,
+        method: 'DELETE'
+    }, callback);
+};
+
+/**
+ * Registers an existing PokitDok user as a patient within a provider’s scheduling system.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Required keys: pd_patient_uuid - The PokitDok unique identifier for the user record,
+                                             pd_provider_uuid - The PokitDok unique identifier for the provider record.
+                                             location - The geo-location of the provider’s physical address.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Grab a list of appointment types and print their type and descriptions
+ *  pokitdok.addPatientToSystem(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      console.log(res);
+ *  });
+    // An example response from this endpoint:
+    // {
+    //     "uuid": "2773f6ff-00cb-460f-823f-5ff2208511e7",
+    //     "email": "peg@emailprovider.com",
+    //     "phone": "5553331122",
+    //     "birth_date": "1990-01-13",
+    //     "first_name": "Peg",
+    //     "last_name": "Patient",
+    //     "member_id": "PD20150001"
+    // }
+ *
+ * ```
+ */
+PokitDok.prototype.addPatientToSystem = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    this.apiRequest({
+        path: '/schedule/patient/',
+        method: 'POST',
+        json: options
+    }, callback);
+};
+
+/**
+ * Creates an open scheduling slot with the specified start and end times at the specified provider and location.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Required keys:  pd_provider_uuid, location, appointment_type, start_date, end_date
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Grab a list of appointment types and print their type and descriptions
+ *  pokitdok.createAppointmentSlot(function(err, res) {
+ *      if (err) {
+ *          return console.log(err);
+ *      }
+ *      console.log(res);
+ *  });
+    // An example response from this endpoint
+    // {
+    //     "pd_appointment_uuid": "ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2",
+    //     "provider_scheduler_uuid": "8b21efa4-8535-11e4-a6cb-0800272e8da1",
+    //     "appointment_id": "W4MEM00001",
+    //     "appointment_type": "AT1",
+    //     "start_date": "2014-12-16T15:09:34.197709",
+    //     "end_date": "2014-12-16T16:09:34.197717",
+    //     "booked": false
+    // }
+ *
+ * ```
+ */
+PokitDok.prototype.createAppointmentSlot = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    this.apiRequest({
+        path: '/schedule/slots/',
+        method: 'POST',
+        json: options
+    }, callback);
+};
+
+/**
+ * Deletes an open scheduling slot with the specified uuid.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#scheduling| See API documentation for more information}
+ *
+ * @param {object} options - Required keys: pd_appointment_uuid.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Delete an appointment slot with the given uuid
+ *  pokitdok.deleteAppointmentSlot({
+            uuid: ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.deleteAppointmentSlot = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || '';
+    this.apiRequest({
+        path: '/schedule/slots/' + token,
+        method: 'DELETE'
+    }, callback);
+};
+
+/**
  * Get a list of trading partners from the API for use in other EDI transactions.
  *
  * {@link https://platform.pokitdok.com/documentation/v4/#trading-partners| See API documentation for more information}
+ * @param {object} options - A object containing some options for the request. Possible keys include: id (a trading partner id)
  * @param {function} callback - a callback function that accepts an error and response parameter
  * @example
  *  ```js
