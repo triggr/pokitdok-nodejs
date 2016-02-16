@@ -469,13 +469,13 @@ describe('PokitDok', function () {
     //             }
     //             // An example response contains the following fields
     //             // {
-    //             //     "pd_appointment_uuid": "ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2",
-    //             //     "provider_scheduler_uuid": "8b21efa4-8535-11e4-a6cb-0800272e8da1",
-    //             //     "appointment_id": "W4MEM00001",
-    //             //     "appointment_type": "AT1",
-    //             //     "start_date": "2014-12-16T15:09:34.197709",
-    //             //     "end_date": "2014-12-16T16:09:34.197717",
-    //             //     "booked": false
+    //             //     'pd_appointment_uuid': 'ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2',
+    //             //     'provider_scheduler_uuid': '8b21efa4-8535-11e4-a6cb-0800272e8da1',
+    //             //     'appointment_id': 'W4MEM00001',
+    //             //     'appointment_type': 'AT1',
+    //             //     'start_date': '2014-12-16T15:09:34.197709',
+    //             //     'end_date': '2014-12-16T16:09:34.197717',
+    //             //     'booked': false
     //             // }
     //             assert.equal(null, err);
     //             assert.equal(res.meta instanceof Object, true);
@@ -496,6 +496,103 @@ describe('PokitDok', function () {
             });
         });
     });
+
+    // describe('#createIdentity()', function() {
+    //     it('should create an identity resource with the given parameters and return it with a uuid', function(done) {
+    //         pokitdok.createIdentity({
+    //             prefix: 'Mr.',
+    //             first_name: 'Oscar',
+    //             middle_name: 'Harold',
+    //             last_name: 'Whitmire',
+    //             suffix: 'IV',
+    //             birth_date: '2000-05-01',
+    //             gender: 'male',
+    //             email: 'oscar@pokitdok.com',
+    //             phone: '555-555-5555',
+    //             secondary_phone: '333-333-4444',
+    //             address: {
+    //                 address_lines: ['1400 Anyhoo Avenue'],
+    //                 city: 'Springfield',
+    //                 state: 'IL',
+    //                 zipcode: '90210'
+    //             },
+    //             identifiers: [
+    //                 {
+    //                     location: [-121.93831, 37.53901],
+    //                     provider_uuid: '1917f12b-fb6a-4016-93bc-adeb83204c83',
+    //                     system_uuid: '967d207f-b024-41cc-8cac-89575a1f6fef',
+    //                     value: 'W90100-IG-88'
+    //                 }
+    //             ]
+    //         }, function(err, res) {
+    //             assert.equal(null, err);
+    //             assert.equal(res.meta instanceof Object, true);
+    //             assert.equal(res.data instanceof Object, true);
+    //             done();
+    //         });
+    //     });
+    // });
+    //
+    // describe('#updateIdentity()', function() {
+    //     it('should create an identity resource with the given parameters and return it with a uuid', function(done) {
+    //         pokitdok.createIdentity({
+    //             prefix: 'Mr.',
+    //             first_name: 'Oscar',
+    //             middle_name: 'Harold',
+    //             last_name: 'Whitmire',
+    //             suffix: 'IV',
+    //             birth_date: '2000-05-01',
+    //             gender: 'male',
+    //             email: 'oscar@pokitdok.com',
+    //             phone: '555-555-5555',
+    //             secondary_phone: '333-333-4444',
+    //             address: {
+    //                 address_lines: ['1400 Anyhoo Avenue'],
+    //                 city: 'Springfield',
+    //                 state: 'IL',
+    //                 zipcode: '90210'
+    //             },
+    //             identifiers: [
+    //                 {
+    //                     location: [-121.93831, 37.53901],
+    //                     provider_uuid: '1917f12b-fb6a-4016-93bc-adeb83204c83',
+    //                     system_uuid: '967d207f-b024-41cc-8cac-89575a1f6fef',
+    //                     value: 'W90100-IG-88'
+    //                 }
+    //             ]
+    //         }, function(err, res) {
+    //             assert.equal(null, err);
+    //             assert.equal(res.meta instanceof Object, true);
+    //             assert.equal(res.data instanceof Object, true);
+    //             done();
+    //         });
+    //     });
+    // });
+    //
+    // describe('#getIdentity()', function() {
+    //     it('should return a single identity resource given a specific uuid', function(done) {
+    //         pokitdok.getIdentity({
+    //             uuid: '881bc095-2068-43cb-9783-cce630364122'
+    //         }, function(err, res) {
+    //             assert.equal(null, err);
+    //             assert.equal(res.meta instanceof Object, true);
+    //             assert.equal(res.data instanceof Array, true);
+    //             done();
+    //         });
+    //     });
+    //     it('should return a list of identity resources that much the supplied set of query parameters', function(done) {
+    //         pokitdok.getIdentity({
+    //             first_name: 'Oscar',
+    //             last_name: 'Whitemire',
+    //             gender: 'male'
+    //         }, function(err, res) {
+    //             assert.equal(null, err);
+    //             assert.equal(res.meta instanceof Object, true);
+    //             assert.equal(res.data instanceof Array, true);
+    //             done();
+    //         });
+    //     });
+    // });
 
     describe('#referrals()', function () {
         it('should return a status response', function (done) {

@@ -1,6 +1,12 @@
 // JSDoc entries will be converted to markdown for documentation. Private functions or comments that should be private
 // should not use JSDoc syntax, or they will end up in the README.md file.
 
+/*
+ *  @description.
+ *
+ */
+
+
 // module globals and imports
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
@@ -1134,13 +1140,13 @@ PokitDok.prototype.deleteAppointment = function (options, callback) {
  *  });
     // An example response from this endpoint:
     // {
-    //     "uuid": "2773f6ff-00cb-460f-823f-5ff2208511e7",
-    //     "email": "peg@emailprovider.com",
-    //     "phone": "5553331122",
-    //     "birth_date": "1990-01-13",
-    //     "first_name": "Peg",
-    //     "last_name": "Patient",
-    //     "member_id": "PD20150001"
+    //     'uuid': '2773f6ff-00cb-460f-823f-5ff2208511e7',
+    //     'email': 'peg@emailprovider.com',
+    //     'phone': '5553331122',
+    //     'birth_date': '1990-01-13',
+    //     'first_name': 'Peg',
+    //     'last_name': 'Patient',
+    //     'member_id': 'PD20150001'
     // }
  *
  * ```
@@ -1177,13 +1183,13 @@ PokitDok.prototype.addPatientToSystem = function (options, callback) {
  *  });
     // An example response from this endpoint
     // {
-    //     "pd_appointment_uuid": "ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2",
-    //     "provider_scheduler_uuid": "8b21efa4-8535-11e4-a6cb-0800272e8da1",
-    //     "appointment_id": "W4MEM00001",
-    //     "appointment_type": "AT1",
-    //     "start_date": "2014-12-16T15:09:34.197709",
-    //     "end_date": "2014-12-16T16:09:34.197717",
-    //     "booked": false
+    //     'pd_appointment_uuid': 'ab21e95b-8fa6-41d4-98b9-9a1f6fcff0d2',
+    //     'provider_scheduler_uuid': '8b21efa4-8535-11e4-a6cb-0800272e8da1',
+    //     'appointment_id': 'W4MEM00001',
+    //     'appointment_type': 'AT1',
+    //     'start_date': '2014-12-16T15:09:34.197709',
+    //     'end_date': '2014-12-16T16:09:34.197717',
+    //     'booked': false
     // }
  *
  * ```
@@ -1236,6 +1242,194 @@ PokitDok.prototype.deleteAppointmentSlot = function (options, callback) {
         method: 'DELETE'
     }, callback);
 };
+
+/**
+ * Returns a list containing a single identity resource if a uuid is provided or returns a list containing one
+ * or more identity resources meeting search criteria.
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#identity-management| See API documentation for more information}
+ *
+ * @param {object} options - A list of parameters used to create the identity resource. Avaiable keys include: address.adddress_lines,
+                             address.city, address.state, address.zipcode, birth_date, email, first_name, gender, identifiers, last_name,
+                             member_id, middle_name, phone, prefix, secondary_phone ssn, suffix, uuid.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Get a single identity resource by providing an uuid
+ *  pokitdok.getIdentity({
+            uuid: '881bc095-2068-43cb-9783-cce630364122'
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+ *  });
+ *
+ * ```
+ * @example
+ *  ```js
+ *  // Query the indentity endpoint for an identity resource with the given values for the fields provided
+ *  pokitdok.getIdentity({
+            first_name: 'Oscar',
+            last_name: 'Whitemire',
+            gender: 'male'
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.getIdentity = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    var token = options.uuid || ''
+    var path;
+    if ( token != '' ) {
+        path = '/identity/' + token
+    } else {
+        path = '/identity?'
+    }
+    this.apiRequest({
+        path: path,
+        method: 'GET',
+        qs: (!options.uuid) ? options : null
+    }, callback);
+};
+
+
+/**
+ * Updates an existing identity resource. Returns the updated resource
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#identity-management| See API documentation for more information}
+ *
+ * @param {object} options - A list of parameters used to create the identity resource. Avaiable keys include: address.adddress_lines,
+                             address.city, address.state, address.zipcode, birth_date, email, first_name, gender, identifiers, last_name,
+                             member_id, middle_name, phone, prefix, secondary_phone ssn, suffix, uuid.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Get a single identity resource by providing an uuid
+ *  pokitdok.updateIdentity({
+            uuid: '881bc095-2068-43cb-9783-cce630364122'
+            prefix: 'Mr.',
+            first_name: 'Oscar',
+            middle_name: 'Harold',
+            last_name: 'Whitmire',
+            suffix: 'IV',
+            birth_date: '2000-05-01',
+            gender: 'male',
+            email: 'oscar.whitmire@pokitdok.com',
+            phone: '555-555-5555',
+            secondary_phone: '333-333-4444',
+            address: {
+                address_lines: ['1400 Anyhoo Avenue'],
+                city: 'Springfield',
+                state: 'IL',
+                zipcode: '90210'
+            },
+            identifiers': [
+                {
+                    location: [-121.93831, 37.53901],
+                    provider_uuid: '1917f12b-fb6a-4016-93bc-adeb83204c83',
+                    system_uuid: '967d207f-b024-41cc-8cac-89575a1f6fef',
+                    value: 'W90100-IG-88'
+
+                }
+            ]
+        }, function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.updateIdentity = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+
+    var token = options.uuid;
+
+    this.apiRequest({
+        path: '/identity/' + token,
+        method: 'PUT'
+    }, callback);
+};
+
+/**
+ * Creates an identity resource. Returns the created resource with a uuid
+ *
+ * {@link https://platform.pokitdok.com/documentation/v4/#identity-management| See API documentation for more information}
+ *
+ * @param {object} options - A list of parameteres used to creat the identity resource. Avaiable keys include: address.adddress_lines,
+                             address.city, address.state, address.zipcode, birth_date, email, first_name, gender, identifiers, last_name,
+                             member_id, middle_name, phone, prefix, secondary_phone ssn, suffix, uuid.
+ * @param {function} callback - a callback function that accepts an error and response parameter
+ * @example
+ *  ```js
+ *  // Create a new identity resource with the following information
+ *  pokitdok.createIdentity({
+            'prefix': 'Mr.',
+            'first_name': 'Oscar',
+            'middle_name': 'Harold',
+            'last_name': 'Whitmire',
+            'suffix': 'IV',
+            'birth_date': '2000-05-01',
+            'gender': 'male',
+            'email': 'oscar@pokitdok.com',
+            'phone': '555-555-5555',
+            'secondary_phone': '333-333-4444',
+            'address': {
+                'address_lines': ['1400 Anyhoo Avenue'],
+                'city': 'Springfield',
+                'state': 'IL',
+                'zipcode': '90210'
+            },
+            'identifiers': [
+                {
+                    'location': [-121.93831, 37.53901],
+                    'provider_uuid': '1917f12b-fb6a-4016-93bc-adeb83204c83',
+                    'system_uuid': '967d207f-b024-41cc-8cac-89575a1f6fef',
+                    'value': 'W90100-IG-88'
+
+                }
+            ]
+        },function(err, res) {
+           if (err) {
+               return console.log(err);
+           }
+           console.log(res);
+ *  });
+ *
+ * ```
+ */
+PokitDok.prototype.createIdentity = function (options, callback) {
+    if (options instanceof Function) {
+        callback = options;
+    }
+    if (!options) {
+        options = {};
+    }
+    this.apiRequest({
+        path: '/identity/',
+        method: 'POST',
+        options: options
+    }, callback);
+};
+
+
 
 /**
  * Get a list of trading partners from the API for use in other EDI transactions.
