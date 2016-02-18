@@ -10,7 +10,6 @@
 // module globals and imports
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
-    // baseUrl = 'http://localhost:5002',
     request = require('request'),
     fs = require('fs'),
     _ = require('lodash');
