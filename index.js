@@ -124,7 +124,11 @@ PokitDok.prototype.apiRequest = function (options, callback) {
         'User-Agent': userAgent
     };
 
-    return request(options, function (err, res, body) {
+    if ( options.formData ) {
+        options.headers['content-type'] = 'multipart/form-data';
+    }
+
+    var req = request(options, function (err, res, body) {
         // handle invalid file reqs
         if (!options.json && typeof body == 'string' && body.indexOf('{') === 0) {
             body = JSON.parse(body);
@@ -147,6 +151,15 @@ PokitDok.prototype.apiRequest = function (options, callback) {
         }
         callback && callback(null, data);
     });
+    //
+    // if ( options.formData ) {
+    //     var form = req.form();
+    //     _.each(options.formData, function(value, key) {
+    //         form.append(key, value);
+    //     });
+    // }
+
+    return req;
 };
 
 /**
@@ -561,16 +574,21 @@ PokitDok.prototype.enrollment = function (options, callback) {
 PokitDok.prototype.files = function (options, callback) {
     // basic file validation
     // encode file for delivery over http
+    var readStream = fs.createReadStream(options.path_x12_file);
     this.apiRequest({
         path: '/files/',
         method: 'POST',
         formData: {
-            files: {
-                'file': fs.createReadStream(options.path_x12_file)
-            }
+            file: {
+                value: readStream,
+                options: {
+                    filename: 'x12file',
+                    contentType: 'multipart/form-data'
+                }
+            },
+            trading_partner_id: options.trading_partner_id
         }
     }, callback);
-
 };
 
 /**
@@ -1334,7 +1352,7 @@ PokitDok.prototype.getIdentity = function (options, callback) {
                 state: 'IL',
                 zipcode: '90210'
             },
-            identifiers': [
+            identifiers: [
                 {
                     location: [-121.93831, 37.53901],
                     provider_uuid: '1917f12b-fb6a-4016-93bc-adeb83204c83',
