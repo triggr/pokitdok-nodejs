@@ -41,9 +41,7 @@ This library aims to support and is tested against these NodeJS versions, using 
   * [pokitDok.claimStatus(options, callback)](#PokitDok#claimStatus)
   * [pokitDok.eligibility(options, callback)](#PokitDok#eligibility)
   * [pokitDok.enrollment(options, callback)](#PokitDok#enrollment)
-  * [pokitDok.files(fileReadStream, callback)](#PokitDok#files)
   * [pokitDok.icdConvert(options, callback)](#PokitDok#icdConvert)
-  * [pokitDok.claimsConvert(x12ClaimsFile:, callback)](#PokitDok#claimsConvert)
   * [pokitDok.insurancePrices(options, callback)](#PokitDok#insurancePrices)
   * [pokitDok.medicalProcedureCodes(options, callback)](#PokitDok#medicalProcedureCodes)
   * [~~pokitDok.payers(callback)~~](#PokitDok#payers)
@@ -481,27 +479,6 @@ pokitdok.enrollment({
 });
 ```
 
-<a name="PokitDok#files"></a>
-###pokitDok.files(fileReadStream, callback)
-Submit a raw X12 file to the pokitdok platform for processing
-
-**Params**
-
-- fileReadStream `FileReadStream`  
-- callback `function` - [ See API documentation for more information](https://platform.pokitdok.com/documentation/v4/#files)  
-
-**Example**  
-```js
-// Basic file validation - encodes file for delivery over http
-pokitdok.files(fileReadStream, function(err,res) {
-    if ( err ) {
-        console.log(err);
-    } else {
-        console.log(res);
-    }
-});
-```
-
 <a name="PokitDok#icdConvert"></a>
 ###pokitDok.icdConvert(options, callback)
 The ICD Convert endpoint allows a client application to request ICD-9 to ICD-10
@@ -524,29 +501,6 @@ pokitdok.icdConvert(icd9Code, function(err,res) {
        for ( var i = 0; ilen = res.data.destination_scenarios.choice_lists.length; i < ilen; i++ ) {
            console.log(res.data.destination_scenarios.choice_lists[i].value);
     }
-});
-```
-
-<a name="PokitDok#claimsConvert"></a>
-###pokitDok.claimsConvert(x12ClaimsFile:, callback)
-Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
-
-**Params**
-
-- x12ClaimsFile:  - a X12 claims file to be submitted to the platform for processing  
-- callback `function` - a callback function that accepts an error and response parameter
-
-[ See API documentation for more information](https://platform.pokitdok.com/documentation/v4/#claims-convert)  
-
-**Example**  
-```js
-var text = 'valid x12 claim file content';
-pokitdok.claimsConvert(text, function(err, res) {
-    if (err) {
-         return console.log(err, res.statusCode);
-     }
-     // print the converted data
-     console.log(res.data);
 });
 ```
 

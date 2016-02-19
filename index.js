@@ -552,43 +552,71 @@ PokitDok.prototype.enrollment = function (options, callback) {
     }, callback);
 };
 
-/**
- * Submit a raw X12 file to the pokitdok platform for processing
- * @param {FileReadStream} fileReadStream
- * @param {Function} callback
- *
- * {@link https://platform.pokitdok.com/documentation/v4/#files| See API documentation for more information}
- * @example
- *  ```js
- *  // Basic file validation - encodes file for delivery over http
- *  pokitdok.files(fileReadStream, function(err,res) {
- *      if ( err ) {
- *          console.log(err);
- *      } else {
- *          console.log(res);
- *      }
- *  });
- *  ```
- */
-PokitDok.prototype.files = function (options, callback) {
-    // basic file validation
-    // encode file for delivery over http
-    var readStream = fs.createReadStream(options.path_x12_file);
-    this.apiRequest({
-        path: '/files/',
-        method: 'POST',
-        formData: {
-            file: {
-                value: readStream,
-                options: {
-                    filename: 'x12file',
-                    contentType: 'multipart/form-data'
-                }
-            },
-            trading_partner_id: options.trading_partner_id
-        }
-    }, callback);
-};
+// /**
+//  * Submit a raw X12 file to the pokitdok platform for processing
+//  * @param {FileReadStream} fileReadStream
+//  * @param {Function} callback
+//  *
+//  * {@link https://platform.pokitdok.com/documentation/v4/#files| See API documentation for more information}
+//  * @example
+//  *  ```js
+//  *  // Basic file validation - encodes file for delivery over http
+//  *  pokitdok.files(fileReadStream, function(err,res) {
+//  *      if ( err ) {
+//  *          console.log(err);
+//  *      } else {
+//  *          console.log(res);
+//  *      }
+//  *  });
+//  *  ```
+//  */
+// PokitDok.prototype.files = function (options, callback) {
+//     // basic file validation
+//     // encode file for delivery over http
+//     var readStream = fs.createReadStream(options.path_x12_file);
+//     this.apiRequest({
+//         path: '/files/',
+//         method: 'POST',
+//         formData: {
+//             file: {
+//                 value: readStream,
+//                 options: {
+//                     filename: 'x12file',
+//                     contentType: 'multipart/form-data'
+//                 }
+//             },
+//             trading_partner_id: options.trading_partner_id
+//         }
+//     }, callback);
+// };
+
+// /**
+//  * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
+//  * @param  x12ClaimsFile: a X12 claims file to be submitted to the platform for processing
+//  * @param {function} callback - a callback function that accepts an error and response parameter
+//  *
+//  * {@link https://platform.pokitdok.com/documentation/v4/#claims-convert| See API documentation for more information}
+//  * @example
+//  * ```js
+//  * var text = 'valid x12 claim file content';
+//  * pokitdok.claimsConvert(text, function(err, res) {
+//  *     if (err) {
+//  *          return console.log(err, res.statusCode);
+//  *      }
+//  *      // print the converted data
+//  *      console.log(res.data);
+//  * });
+//  * ```
+//  */
+// PokitDok.prototype.claimsConvert = function(pathToX12File, callback) {
+//     var readStream = fs.createReadStream(pathToX12File);
+//     readStream.pipe(this.apiRequest({
+//         path: '/claims/convert',
+//         method: 'POST',
+//         formData: {},
+//     }, callback));
+// };
+
 
 /**
  * The ICD Convert endpoint allows a client application to request ICD-9 to ICD-10
@@ -627,33 +655,6 @@ PokitDok.prototype.files = function (options, callback) {
         json: options
     }, callback);
  };
-
-/**
- * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
- * @param  x12ClaimsFile: a X12 claims file to be submitted to the platform for processing
- * @param {function} callback - a callback function that accepts an error and response parameter
- *
- * {@link https://platform.pokitdok.com/documentation/v4/#claims-convert| See API documentation for more information}
- * @example
- * ```js
- * var text = 'valid x12 claim file content';
- * pokitdok.claimsConvert(text, function(err, res) {
- *     if (err) {
- *          return console.log(err, res.statusCode);
- *      }
- *      // print the converted data
- *      console.log(res.data);
- * });
- * ```
- */
-PokitDok.prototype.claimsConvert = function(pathToX12File, callback) {
-    var readStream = fs.createReadStream(pathToX12File);
-    readStream.pipe(this.apiRequest({
-        path: '/claims/convert',
-        method: 'POST',
-        formData: {},
-    }, callback));
-};
 
 /**
  * Get a list of insurance prices for a particular CPT Code in a specific Zip Code
