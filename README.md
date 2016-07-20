@@ -1185,7 +1185,12 @@ pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
 
 ## Check SSL protocol and cipher
 ```js
-pokitdok.apiRequest({path: '/ssl/', method: 'GET'});
+pokitdok.apiRequest({path:'/ssl/', method:'GET'}, function (err, res) {
+    if (err) {
+        return console.log(err, res.statusCode);
+    }
+    console.log(res.data.name + ':' + res.data.id);
+});
 ```
 
 ## License
