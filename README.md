@@ -1183,7 +1183,10 @@ pokitdok.tradingPartners({id:'MOCKPAYER'}, function (err, res) {
 });
 ```
 
-
+## Check SSL protocol and cipher
+```js
+pokitdok.apiRequest({path: '/ssl/', method: 'GET'});
+```
 
 ## License
 Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
