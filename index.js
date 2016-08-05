@@ -552,43 +552,6 @@ PokitDok.prototype.enrollment = function (options, callback) {
     }, callback);
 };
 
-// /**
-//  * Submit a raw X12 file to the pokitdok platform for processing
-//  * @param {FileReadStream} fileReadStream
-//  * @param {Function} callback
-//  *
-//  * {@link https://platform.pokitdok.com/documentation/v4/#files| See API documentation for more information}
-//  * @example
-//  *  ```js
-//  *  // Basic file validation - encodes file for delivery over http
-//  *  pokitdok.files(fileReadStream, function(err,res) {
-//  *      if ( err ) {
-//  *          console.log(err);
-//  *      } else {
-//  *          console.log(res);
-//  *      }
-//  *  });
-//  *  ```
-//  */
-// PokitDok.prototype.files = function (options, callback) {
-//     // basic file validation
-//     // encode file for delivery over http
-//     var readStream = fs.createReadStream(options.path_x12_file);
-//     this.apiRequest({
-//         path: '/files/',
-//         method: 'POST',
-//         formData: {
-//             file: {
-//                 value: readStream,
-//                 options: {
-//                     filename: 'x12file',
-//                     contentType: 'multipart/form-data'
-//                 }
-//             },
-//             trading_partner_id: options.trading_partner_id
-//         }
-//     }, callback);
-// };
 
 // /**
 //  * Submit X12 837 file content to convert to a claims API request and map any ICD-9 codes to ICD-10
