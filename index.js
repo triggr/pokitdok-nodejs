@@ -11,8 +11,7 @@
 var userAgent = 'pokitdok-nodejs@0.0.1',
     baseUrl = 'https://platform.pokitdok.com',
     request = require('request'),
-    fs = require('fs'),
-    _ = require('lodash');
+    fs = require('fs');
 
 // a private function to automatically refresh the access token when receiving a 401.
 // Adds rejected requests to a queue to be processed

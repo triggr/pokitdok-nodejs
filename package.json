@@ -27,7 +27,6 @@
   ],
   "main": "index.js",
   "dependencies": {
-    "lodash": "3.10.1",
     "request": "^2.69.0"
   },
   "devDependencies": {
